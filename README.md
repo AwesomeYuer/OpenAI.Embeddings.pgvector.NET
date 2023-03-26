@@ -1,3 +1,6 @@
+# Overview
+    This is a too simple sample for verifing `Open AI Embeddings` by using `pgVector`
+
 # Reference
  - Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
 
