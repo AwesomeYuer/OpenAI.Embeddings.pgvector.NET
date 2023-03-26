@@ -105,24 +105,24 @@ await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
     await npgsqlCommand.ExecuteNonQueryAsync();
 }
 
-var adHocQueryEmbeddings = "shit";
-adHocQueryEmbeddings = "苹果";
-adHocQueryEmbeddings = "佛跳墙";
-adHocQueryEmbeddings = "尿素";
-adHocQueryEmbeddings = "好吃的";
-adHocQueryEmbeddings = "C#";
-adHocQueryEmbeddings = "php";
-adHocQueryEmbeddings = "Java";
-adHocQueryEmbeddings = "螃蟹好吃";
+var adHocQuery = "shit";
+adHocQuery = "苹果";
+adHocQuery = "佛跳墙";
+adHocQuery = "尿素";
+adHocQuery = "好吃的";
+adHocQuery = "C#";
+adHocQuery = "php";
+adHocQuery = "Java";
+adHocQuery = "螃蟹好吃";
 
-Console.WriteLine($"{nameof(adHocQueryEmbeddings)}: {adHocQueryEmbeddings} match similarity:");
+Console.WriteLine($"{nameof(adHocQuery)}: {adHocQuery} match similarity:");
 Console.WriteLine();
 Console.WriteLine();
 
 result = await openAIClient
                         .EmbeddingsEndpoint
                         .CreateEmbeddingAsync
-                                (adHocQueryEmbeddings, model);
+                                (adHocQuery, model);
 
 // Query match similarity
 // Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
@@ -131,27 +131,34 @@ sql = "SELECT content FROM items ORDER BY embedding <= $1";
 sql = "SELECT content FROM items ORDER BY cosine_distance(embedding,$1::vector)";
 sql = "SELECT content FROM items ORDER BY embedding <-> $1::vector";
 
+sql = "SELECT content, max(embedding <-> $1::vector) as MaxOfDistance FROM items GROUP BY content ORDER BY 2" ;
+
+var adHocQueryEmbedding = result
+                                .Data[0]
+                                .Embedding
+                                .Select
+                                    (
+                                        (x) =>
+                                        {
+                                            return (float)x;
+                                        }
+                                    )
+                                .ToArray()
+                                ;
+
 await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
 {
-    var embedding = result
-                        .Data[0]
-                        .Embedding
-                        .Select
-                            (
-                                (x) => 
-                                {
-                                    return (float) x;
-                                }
-                            )
-                        .ToArray()
-                        ;
-    npgsqlCommand.Parameters.AddWithValue(embedding);
+    npgsqlCommand.Parameters.AddWithValue(adHocQueryEmbedding);
 
     await using (DbDataReader dataReader = await npgsqlCommand.ExecuteReaderAsync())
     {
         while (await dataReader.ReadAsync())
         {
-            Console.WriteLine((string) dataReader["content"]);
+            Console
+                .WriteLine
+                        (
+                            $"{nameof(adHocQuery)}: [{adHocQuery}], distance:[{(double) dataReader["MaxOfDistance"]}]\t\t\t\t, content: [{(string) dataReader["content"]}]"
+                        );
         }
     }
 }
