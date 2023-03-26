@@ -2,7 +2,7 @@
 
  This is a too simple `.NET` sample for verifing `Open AI Embeddings` by using `pgVector`
 
-# Reference and Thanks for `Open source`
+# References and Thanks for `Open source`
 - Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
 
     https://github.com/gannonh/gpt3.5-turbo-pgvector
