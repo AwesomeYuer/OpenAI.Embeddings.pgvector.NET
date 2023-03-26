@@ -1,3 +1,6 @@
+# Reference
+https://github.com/gannonh/gpt3.5-turbo-pgvector
+
 # Docker Run `PostgreSQL` Database Server
 ```
 docker pull ankane/pgvector
@@ -68,10 +71,9 @@ CREATE INDEX IF NOT EXISTS my_index
 
 - Query
 ```sql
-select
-	*
-from
-	items;
+
+-- Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
+-- The distance means similarity
 
 SELECT
 	content
