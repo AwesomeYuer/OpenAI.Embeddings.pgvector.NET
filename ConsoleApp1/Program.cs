@@ -103,7 +103,8 @@ result = await openAIClient
                         .CreateEmbeddingAsync(queryEmbeddings);
 
 
-// query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
+// Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
+// The distance means similarity
 sql = "SELECT content FROM items ORDER BY embedding <= $1";
 sql = "SELECT content FROM items ORDER BY cosine_distance(embedding,$1::vector)";
 sql = "SELECT content FROM items ORDER BY embedding <-> $1::vector";
