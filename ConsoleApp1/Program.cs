@@ -115,7 +115,7 @@ adHocQuery = "php";
 adHocQuery = "Java";
 adHocQuery = "螃蟹好吃";
 
-Console.WriteLine($"{nameof(adHocQuery)}: {adHocQuery} match similarity:");
+Console.WriteLine($@"{nameof(adHocQuery)}: ""{adHocQuery}"" match similarity:");
 Console.WriteLine();
 Console.WriteLine();
 
@@ -149,7 +149,7 @@ var adHocQueryEmbedding = result
 await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
 {
     npgsqlCommand.Parameters.AddWithValue(adHocQueryEmbedding);
-
+    var seperator = "\t\t\t\t";
     await using (DbDataReader dataReader = await npgsqlCommand.ExecuteReaderAsync())
     {
         while (await dataReader.ReadAsync())
@@ -157,7 +157,7 @@ await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
             Console
                 .WriteLine
                         (
-                            $"{nameof(adHocQuery)}: [{adHocQuery}], AverageDistance: [{(double) dataReader["AverageDistance"]}]\t\t\t\t, content: [{(string) dataReader["content"]}]"
+                            $@"{nameof(adHocQuery)}: ""{adHocQuery}"", AverageDistance: [{(double) dataReader["AverageDistance"]}]{seperator}, content: ""{(string) dataReader["content"]}"""
                         );
         }
     }
