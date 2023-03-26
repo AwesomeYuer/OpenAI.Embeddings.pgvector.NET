@@ -17,8 +17,14 @@ var inputEmbeddings = new[]
     , "The food was terrible and the waiter..."
     , "麻婆豆腐是美味"
     , "coffee is not good"
+    , "tea is good"
     , "coke is bad"
     , "apple is very very good"
+    , "臭豆腐"
+    , "屎"
+    , "尿"
+    , "屁"
+    , "龙虾"
 }
 ;
 
@@ -100,6 +106,14 @@ await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
 }
 
 var adHocQueryEmbeddings = "shit";
+adHocQueryEmbeddings = "苹果";
+adHocQueryEmbeddings = "佛跳墙";
+adHocQueryEmbeddings = "尿素";
+adHocQueryEmbeddings = "好吃的";
+adHocQueryEmbeddings = "C#";
+adHocQueryEmbeddings = "php";
+adHocQueryEmbeddings = "Java";
+adHocQueryEmbeddings = "螃蟹好吃";
 
 Console.WriteLine($"{nameof(adHocQueryEmbeddings)}: {adHocQueryEmbeddings} match similarity:");
 Console.WriteLine();
