@@ -2,7 +2,12 @@
 
  This is a too simple `.NET` sample for verifing `Open AI Embeddings` by using `pgVector`
 
- https://m.weibo.cn/status/4879926925199207?sourceType=weixin&from=10D3395010&wm=9006_2001&featurecode=newtitle&s_channel=4&s_trans=1922705517_4879926925199207&jumpfrom=weibocom
+ # References and Thanks for `Open source`
+- Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
+
+    https://github.com/gannonh/gpt3.5-turbo-pgvector
+
+    https://m.weibo.cn/status/4879926925199207?sourceType=weixin&from=10D3395010&wm=9006_2001&featurecode=newtitle&s_channel=4&s_trans=1922705517_4879926925199207&jumpfrom=weibocom
 
  ```
  微博正文
@@ -81,10 +86,6 @@ cd my-app && npm install @supabase/supabase-js
 
  ```
 
-# References and Thanks for `Open source`
-- Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
-
-    https://github.com/gannonh/gpt3.5-turbo-pgvector
 - `pgVector`
     
     https://github.com/pgvector/pgvector-dotnet
