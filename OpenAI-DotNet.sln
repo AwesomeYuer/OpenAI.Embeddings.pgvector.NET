@@ -12,6 +12,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI-dotNET-Tests-Proxy", "OpenAI-DotNet-Tests-Proxy\OpenAI-dotNET-Tests-Proxy.csproj", "{F8B5D079-FD33-4A9E-92C4-CC88C911CFF3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00.Solution Items", "00.Solution Items", "{01FAF825-F72B-4FBD-9CFF-57FDAB089F36}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenAI-dotNET", "OpenAI-dotNET", "{60D5DB42-01E2-48DD-8F0B-E1C79FB91E1C}"
 EndProject

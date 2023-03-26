@@ -339,4 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 .vscode
-/OpenAI-DotNet-Tests/tests.config.env
+.openai
