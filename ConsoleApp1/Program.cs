@@ -95,7 +95,7 @@ await using (var cmd = new NpgsqlCommand(sql, connection))
 
 var queryEmbeddings = "shit";
 
-Console.WriteLine($"{nameof(queryEmbeddings)}: {queryEmbeddings}");
+Console.WriteLine($"{nameof(queryEmbeddings)}: {queryEmbeddings} match similarity:");
 Console.WriteLine();
 Console.WriteLine();
 
