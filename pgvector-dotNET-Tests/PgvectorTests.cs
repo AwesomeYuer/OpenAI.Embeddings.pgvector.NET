@@ -34,6 +34,9 @@ public class Example
             await cmd.ExecuteNonQueryAsync();
         }
 
+
+
+
         await using (var cmd = new NpgsqlCommand("INSERT INTO items (embedding) VALUES ($1), ($2), ($3)", conn))
         {
             var embedding1 = new PgVector(new float[] { 1, 1, 1 });
