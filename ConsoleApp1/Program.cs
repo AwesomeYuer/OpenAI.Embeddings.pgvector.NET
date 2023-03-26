@@ -108,7 +108,7 @@ sql = "SELECT content FROM items ORDER BY embedding <= $1";
 sql = "SELECT content FROM items ORDER BY cosine_distance(embedding,$1::vector)";
 sql = "SELECT content FROM items ORDER BY embedding <-> $1::vector";
 
-await using (var cmd = new NpgsqlCommand(selectSql, connection))
+await using (var cmd = new NpgsqlCommand(sql, connection))
 {
     var embedding = result
                         .Data[0]
