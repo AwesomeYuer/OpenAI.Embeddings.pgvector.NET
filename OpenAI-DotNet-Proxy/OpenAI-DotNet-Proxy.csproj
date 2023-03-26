@@ -25,7 +25,7 @@
         <IncludeSymbols>True</IncludeSymbols>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\OpenAI-DotNet\OpenAI-DotNet.csproj" />
+        <ProjectReference Include="..\OpenAI-DotNet\OpenAI-dotNET.csproj" />
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
     <ItemGroup>

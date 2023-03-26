@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OpenAI-DotNet-Proxy\OpenAI-DotNet-Proxy.csproj" />
-    <ProjectReference Include="..\OpenAI-DotNet\OpenAI-DotNet.csproj" />
+    <ProjectReference Include="..\OpenAI-dotNet-Proxy\OpenAI-dotNET-Proxy.csproj" />
+    <ProjectReference Include="..\OpenAI-dotNet\OpenAI-dotNET.csproj" />
   </ItemGroup>
 
 </Project>

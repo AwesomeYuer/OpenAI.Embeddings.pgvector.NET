@@ -3,18 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI-DotNet", "OpenAI-DotNet\OpenAI-DotNet.csproj", "{76B6480E-154A-4341-B530-AFE04B254360}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI-dotNET", "OpenAI-DotNet\OpenAI-dotNET.csproj", "{76B6480E-154A-4341-B530-AFE04B254360}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI-DotNet-Proxy", "OpenAI-DotNet-Proxy\OpenAI-DotNet-Proxy.csproj", "{A4D454D4-C21C-49D3-85A7-B4950358C6E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI-dotNET-Proxy", "OpenAI-DotNet-Proxy\OpenAI-dotNET-Proxy.csproj", "{A4D454D4-C21C-49D3-85A7-B4950358C6E7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI-DotNet-Tests", "OpenAI-DotNet-Tests\OpenAI-DotNet-Tests.csproj", "{066EC5A5-47CE-4B91-B924-F236644037C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI-dotNET-Tests", "OpenAI-DotNet-Tests\OpenAI-dotNET-Tests.csproj", "{066EC5A5-47CE-4B91-B924-F236644037C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI-DotNet-Tests-Proxy", "OpenAI-DotNet-Tests-Proxy\OpenAI-DotNet-Tests-Proxy.csproj", "{F8B5D079-FD33-4A9E-92C4-CC88C911CFF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenAI-dotNET-Tests-Proxy", "OpenAI-DotNet-Tests-Proxy\OpenAI-dotNET-Tests-Proxy.csproj", "{F8B5D079-FD33-4A9E-92C4-CC88C911CFF3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{01FAF825-F72B-4FBD-9CFF-57FDAB089F36}"
-	ProjectSection(SolutionItems) = preProject
-		Directory.Build.props = Directory.Build.props
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00.Solution Items", "00.Solution Items", "{01FAF825-F72B-4FBD-9CFF-57FDAB089F36}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenAI-dotNET", "OpenAI-dotNET", "{60D5DB42-01E2-48DD-8F0B-E1C79FB91E1C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pgvector-dotNET", "pgvector-dotNET", "{FC767E8E-42FA-4067-934B-CC7FC1437D78}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pgvector-dotNET", "pgvector-dotNET\pgvector-dotNET.csproj", "{C4A07BFA-A22C-463A-A882-26CDBB538A13}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pgvector-dotNET-Tests", "pgvector-dotNET-Tests\pgvector-dotNET-Tests.csproj", "{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,9 +43,25 @@ Global
 		{F8B5D079-FD33-4A9E-92C4-CC88C911CFF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8B5D079-FD33-4A9E-92C4-CC88C911CFF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8B5D079-FD33-4A9E-92C4-CC88C911CFF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4A07BFA-A22C-463A-A882-26CDBB538A13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4A07BFA-A22C-463A-A882-26CDBB538A13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4A07BFA-A22C-463A-A882-26CDBB538A13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4A07BFA-A22C-463A-A882-26CDBB538A13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{76B6480E-154A-4341-B530-AFE04B254360} = {60D5DB42-01E2-48DD-8F0B-E1C79FB91E1C}
+		{A4D454D4-C21C-49D3-85A7-B4950358C6E7} = {60D5DB42-01E2-48DD-8F0B-E1C79FB91E1C}
+		{066EC5A5-47CE-4B91-B924-F236644037C1} = {60D5DB42-01E2-48DD-8F0B-E1C79FB91E1C}
+		{F8B5D079-FD33-4A9E-92C4-CC88C911CFF3} = {60D5DB42-01E2-48DD-8F0B-E1C79FB91E1C}
+		{C4A07BFA-A22C-463A-A882-26CDBB538A13} = {FC767E8E-42FA-4067-934B-CC7FC1437D78}
+		{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06} = {FC767E8E-42FA-4067-934B-CC7FC1437D78}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {971477B1-6BBA-40CD-8B76-AEBC01D99130}
