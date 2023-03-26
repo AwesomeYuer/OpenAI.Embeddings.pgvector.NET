@@ -2,7 +2,9 @@
  - Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
 
     https://github.com/gannonh/gpt3.5-turbo-pgvector
-
+ - `pgVector`
+    
+    https://github.com/pgvector/pgvector-dotnet
 
 # Docker Run `PostgreSQL` Database Server
 ```
