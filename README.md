@@ -84,7 +84,7 @@ ORDER BY
 
 # Run/Debug program/project entry:
 ```
-# Open Visual Studio solution at first:
+# Open Visual Studio solution at first, and then run or debug:
 OpenAI.Embeddings.pgvector.NET\ConsoleApp1\ConsoleApp1.csproj
 ```
 
