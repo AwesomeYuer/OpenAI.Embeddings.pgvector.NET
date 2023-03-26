@@ -82,6 +82,7 @@ dataSourceBuilder.UseVector();
 using var npgsqlDataSource = dataSourceBuilder.Build();
 using var connection = npgsqlDataSource.OpenConnection();
 
+// Preserve the vectors of contents of embeddings for match
 await using (var cmd = new NpgsqlCommand(sql, connection))
 {
     foreach (var (content , pgVector) in embeddings)
@@ -102,7 +103,7 @@ result = await openAIClient
                         .EmbeddingsEndpoint
                         .CreateEmbeddingAsync(queryEmbeddings);
 
-
+// Query match similarity
 // Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
 // The distance means similarity
 sql = "SELECT content FROM items ORDER BY embedding <= $1";
