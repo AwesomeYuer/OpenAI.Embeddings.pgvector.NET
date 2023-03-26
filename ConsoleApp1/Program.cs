@@ -131,7 +131,7 @@ sql = "SELECT content FROM items ORDER BY embedding <= $1";
 sql = "SELECT content FROM items ORDER BY cosine_distance(embedding,$1::vector)";
 sql = "SELECT content FROM items ORDER BY embedding <-> $1::vector";
 
-sql = "SELECT content, max(embedding <-> $1::vector) as MaxOfDistance FROM items GROUP BY content ORDER BY 2" ;
+sql = "SELECT content, avg(embedding <-> $1::vector) as AverageDistance FROM items GROUP BY content ORDER BY 2" ;
 
 var adHocQueryEmbedding = result
                                 .Data[0]
@@ -157,7 +157,7 @@ await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
             Console
                 .WriteLine
                         (
-                            $"{nameof(adHocQuery)}: [{adHocQuery}], distance: [{(double) dataReader["MaxOfDistance"]}]\t\t\t\t, content: [{(string) dataReader["content"]}]"
+                            $"{nameof(adHocQuery)}: [{adHocQuery}], AverageDistance: [{(double) dataReader["AverageDistance"]}]\t\t\t\t, content: [{(string) dataReader["content"]}]"
                         );
         }
     }
