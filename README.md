@@ -16,13 +16,27 @@ localhost
 5432
 ```
 
-- create the database [pgVectors]:
+- create the database `pgVectors`:
 ```sql
 create database pgVectors
 ```
 
+- Create user/login for database `pgVectors`
+```sql
+-- Role: sa2
+-- DROP ROLE IF EXISTS sa2;
 
-- Switch to database [pgVectors] and then:
+CREATE ROLE sa2 WITH
+  LOGIN
+  SUPERUSER
+  INHERIT
+  CREATEDB
+  CREATEROLE
+  REPLICATION
+  PASSWORD 'password02!';
+```
+
+- Switch to database `pgVectors` on `pgAmin` and then:
 ```sql
 CREATE EXTENSION vector;
 ```
