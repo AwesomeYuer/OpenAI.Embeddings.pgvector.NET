@@ -1,6 +1,8 @@
 ﻿# Overview
 
- This is a too simple `.NET` sample for verifing `Open AI Embeddings` by using `pgVector`
+ - This is a too simple `.NET` sample for verifing `Open AI Embeddings` by using `pgVector`
+ - screenshot
+  ![screenshot](ConsoleApp1/assets/screenshot.png)
 
  # References and Thanks for `Open Source` and `Internet`
 - Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
