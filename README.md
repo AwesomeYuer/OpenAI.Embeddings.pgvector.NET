@@ -1,11 +1,12 @@
 # Overview
-    This is a too simple `.NET` sample for verifing `Open AI Embeddings` by using `pgVector`
+
+ This is a too simple `.NET` sample for verifing `Open AI Embeddings` by using `pgVector`
 
 # Reference
- - Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
+- Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
 
     https://github.com/gannonh/gpt3.5-turbo-pgvector
- - `pgVector`
+- `pgVector`
     
     https://github.com/pgvector/pgvector-dotnet
 
