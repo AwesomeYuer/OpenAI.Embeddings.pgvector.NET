@@ -3,11 +3,8 @@ using Npgsql;
 using OpenAI;
 using PgVectors.NET;
 using PgVectors.Npgsql;
-using System.Collections.Generic;
-using System.Numerics;
 
 Console.WriteLine("Hello, World!");
-
 
 var auth = OpenAIAuthentication.LoadFromDirectory();
 
@@ -42,6 +39,7 @@ var insertSql = inputEmbeddings
                                     $@"{x},{y}";
                             }
                         );
+
 insertSql = $"INSERT INTO items (content, embedding) VALUES {insertSql}";
 
 var result = await openAIClient
@@ -96,6 +94,10 @@ await using (var cmd = new NpgsqlCommand(insertSql, connection))
 
 var queryEmbeddings = "shit";
 
+Console.WriteLine($"{nameof(queryEmbeddings)}: {queryEmbeddings}");
+Console.WriteLine();
+Console.WriteLine();
+
 result = await openAIClient
                         .EmbeddingsEndpoint
                         .CreateEmbeddingAsync(queryEmbeddings);
@@ -121,10 +123,6 @@ await using (var cmd = new NpgsqlCommand(selectSql, connection))
                         .ToArray()
                         ;
     cmd.Parameters.AddWithValue(embedding);
-
-    Console.WriteLine($"{queryEmbeddings}");
-    Console.WriteLine();
-    Console.WriteLine();
 
     await using (var reader = await cmd.ExecuteReaderAsync())
     {
