@@ -23,10 +23,10 @@ create database pgVectors
 
 - Create user/login for database `pgVectors`
 ```sql
--- Role: sa2
--- DROP ROLE IF EXISTS sa2;
+-- Role: sa
+-- DROP ROLE IF EXISTS sa;
 
-CREATE ROLE sa2 WITH
+CREATE ROLE sa WITH
   LOGIN
   SUPERUSER
   INHERIT
@@ -41,7 +41,7 @@ CREATE ROLE sa2 WITH
 CREATE EXTENSION vector;
 ```
 
-- create the table named [items]:
+- create the table named `items`:
 ```sql
 -- Table: public.items
 -- DROP TABLE IF EXISTS public.items;
@@ -87,6 +87,22 @@ ORDER BY
 # Open Visual Studio solution at first, and then run or debug:
 OpenAI.Embeddings.pgvector.NET\ConsoleApp1\ConsoleApp1.csproj
 ```
+
+# Config your `Open AI` key in :
+- Config file:
+    `OpenAI.Embeddings.pgvector.NET\ConsoleApp1\.openai`
+- Content: 
+    - The all `sk-XXXXXXXX` are same as your `Open AI Key` on https://platform.openai.com/account/api-keys
+    - The all `org-YYYYYYYY` are same as your `Organization ID` in the `Settings` on https://platform.openai.com/account/org-settings
+    ```
+    OPENAI_KEY=sk-XXXXXXXX
+    OPENAI_API_KEY=sk-XXXXXXXX
+    OPENAI_SECRET_KEY=sk-XXXXXXXX
+    TEST_OPENAI_SECRET_KEY=sk-XXXXXXXX
+    OPENAI_ORGANIZATION_ID=org-YYYYYYYY
+    OPEN_AI_ORGANIZATION_ID=org-YYYYYYYY
+    ORGANIZATION=org-YYYYYYYY
+    ```
 
 
 # OpenAI-DotNet
