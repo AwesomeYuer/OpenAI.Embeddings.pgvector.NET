@@ -1,5 +1,5 @@
 # Reference
- - Ad-hoc query the `vector` of `embedding` sorted match similarity with the preserved `vectors` of `embeddings` of contents
+ - Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
 
     https://github.com/gannonh/gpt3.5-turbo-pgvector
 
