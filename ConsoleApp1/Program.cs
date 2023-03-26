@@ -99,16 +99,16 @@ await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
     await npgsqlCommand.ExecuteNonQueryAsync();
 }
 
-var queryEmbeddings = "shit";
+var adHocQueryEmbeddings = "shit";
 
-Console.WriteLine($"{nameof(queryEmbeddings)}: {queryEmbeddings} match similarity:");
+Console.WriteLine($"{nameof(adHocQueryEmbeddings)}: {adHocQueryEmbeddings} match similarity:");
 Console.WriteLine();
 Console.WriteLine();
 
 result = await openAIClient
                         .EmbeddingsEndpoint
                         .CreateEmbeddingAsync
-                                (queryEmbeddings, model);
+                                (adHocQueryEmbeddings, model);
 
 // Query match similarity
 // Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
