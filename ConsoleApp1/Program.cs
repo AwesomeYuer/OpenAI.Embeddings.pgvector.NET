@@ -157,7 +157,7 @@ await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
             Console
                 .WriteLine
                         (
-                            $"{nameof(adHocQuery)}: [{adHocQuery}], distance:[{(double) dataReader["MaxOfDistance"]}]\t\t\t\t, content: [{(string) dataReader["content"]}]"
+                            $"{nameof(adHocQuery)}: [{adHocQuery}], distance: [{(double) dataReader["MaxOfDistance"]}]\t\t\t\t, content: [{(string) dataReader["content"]}]"
                         );
         }
     }
