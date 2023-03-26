@@ -1,5 +1,7 @@
 # Reference
-https://github.com/gannonh/gpt3.5-turbo-pgvector
+ - Query match similarity sorting
+    https://github.com/gannonh/gpt3.5-turbo-pgvector
+
 
 # Docker Run `PostgreSQL` Database Server
 ```
