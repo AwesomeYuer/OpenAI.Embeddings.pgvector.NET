@@ -42,9 +42,14 @@ var sql = inputEmbeddings
 
 sql = $"INSERT INTO items (content, embedding) VALUES {sql}";
 
+var model = await openAIClient
+                        .ModelsEndpoint
+                        .GetModelDetailsAsync
+                                ("text-embedding-ada-002");
+
 var result = await openAIClient
                         .EmbeddingsEndpoint
-                        .CreateEmbeddingAsync(inputEmbeddings);
+                        .CreateEmbeddingAsync(inputEmbeddings, model);
 i = 0;
 var embeddings = result
                     .Data
@@ -101,7 +106,8 @@ Console.WriteLine();
 
 result = await openAIClient
                         .EmbeddingsEndpoint
-                        .CreateEmbeddingAsync(queryEmbeddings);
+                        .CreateEmbeddingAsync
+                                (queryEmbeddings, model);
 
 // Query match similarity
 // Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
