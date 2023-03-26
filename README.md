@@ -1,7 +1,7 @@
 ﻿# Overview
 
  - This is a too simple `.NET` sample for verifing `Open AI Embeddings` by using `pgVector`
- - screenshot
+ - Screenshot
   ![screenshot](ConsoleApp1/assets/screenshot.png)
 
  # References and Thanks for `Open Source` and `Internet`
