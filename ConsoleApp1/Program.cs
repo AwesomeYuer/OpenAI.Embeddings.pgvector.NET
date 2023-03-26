@@ -22,7 +22,7 @@ var inputEmbeddings = new[]
 ;
 
 var i = 0;
-var insertSql = inputEmbeddings
+var sql = inputEmbeddings
                     .Select
                         (
                             (x) =>
@@ -40,7 +40,7 @@ var insertSql = inputEmbeddings
                             }
                         );
 
-insertSql = $"INSERT INTO items (content, embedding) VALUES {insertSql}";
+sql = $"INSERT INTO items (content, embedding) VALUES {sql}";
 
 var result = await openAIClient
                         .EmbeddingsEndpoint
@@ -82,7 +82,7 @@ dataSourceBuilder.UseVector();
 using var npgsqlDataSource = dataSourceBuilder.Build();
 using var connection = npgsqlDataSource.OpenConnection();
 
-await using (var cmd = new NpgsqlCommand(insertSql, connection))
+await using (var cmd = new NpgsqlCommand(sql, connection))
 {
     foreach (var (content , pgVector) in embeddings)
     {
@@ -103,10 +103,10 @@ result = await openAIClient
                         .CreateEmbeddingAsync(queryEmbeddings);
 
 
-
-var selectSql = "SELECT content FROM items ORDER BY embedding <= $1";
-selectSql = "SELECT content FROM items ORDER BY cosine_distance(embedding,$1::vector)";
-selectSql = "SELECT content FROM items ORDER BY embedding <-> $1::vector";
+// query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
+sql = "SELECT content FROM items ORDER BY embedding <= $1";
+sql = "SELECT content FROM items ORDER BY cosine_distance(embedding,$1::vector)";
+sql = "SELECT content FROM items ORDER BY embedding <-> $1::vector";
 
 await using (var cmd = new NpgsqlCommand(selectSql, connection))
 {
