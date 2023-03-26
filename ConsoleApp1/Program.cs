@@ -3,6 +3,7 @@ using Npgsql;
 using OpenAI;
 using PgVectors.NET;
 using PgVectors.Npgsql;
+using System.Data.Common;
 
 Console.WriteLine("Hello, World!");
 
@@ -88,14 +89,14 @@ using var npgsqlDataSource = dataSourceBuilder.Build();
 using var connection = npgsqlDataSource.OpenConnection();
 
 // Preserve the vectors of contents of embeddings for match
-await using (var cmd = new NpgsqlCommand(sql, connection))
+await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
 {
     foreach (var (content , pgVector) in embeddings)
     {
-        cmd.Parameters.AddWithValue(content);
-        cmd.Parameters.AddWithValue(pgVector);
+        npgsqlCommand.Parameters.AddWithValue(content);
+        npgsqlCommand.Parameters.AddWithValue(pgVector);
     }
-    await cmd.ExecuteNonQueryAsync();
+    await npgsqlCommand.ExecuteNonQueryAsync();
 }
 
 var queryEmbeddings = "shit";
@@ -116,7 +117,7 @@ sql = "SELECT content FROM items ORDER BY embedding <= $1";
 sql = "SELECT content FROM items ORDER BY cosine_distance(embedding,$1::vector)";
 sql = "SELECT content FROM items ORDER BY embedding <-> $1::vector";
 
-await using (var cmd = new NpgsqlCommand(sql, connection))
+await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
 {
     var embedding = result
                         .Data[0]
@@ -130,13 +131,13 @@ await using (var cmd = new NpgsqlCommand(sql, connection))
                             )
                         .ToArray()
                         ;
-    cmd.Parameters.AddWithValue(embedding);
+    npgsqlCommand.Parameters.AddWithValue(embedding);
 
-    await using (var reader = await cmd.ExecuteReaderAsync())
+    await using (DbDataReader dataReader = await npgsqlCommand.ExecuteReaderAsync())
     {
-        while (await reader.ReadAsync())
+        while (await dataReader.ReadAsync())
         {
-            Console.WriteLine((string)reader.GetValue(0));
+            Console.WriteLine((string) dataReader["content"]);
         }
     }
 }
