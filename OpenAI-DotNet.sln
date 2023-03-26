@@ -14,6 +14,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00.Solution Items", "00.Solution Items", "{01FAF825-F72B-4FBD-9CFF-57FDAB089F36}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenAI-dotNET", "OpenAI-dotNET", "{60D5DB42-01E2-48DD-8F0B-E1C79FB91E1C}"
@@ -23,6 +24,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pgvector-dotNET", "pgvector-dotNET\pgvector-dotNET.csproj", "{C4A07BFA-A22C-463A-A882-26CDBB538A13}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pgvector-dotNET-Tests", "pgvector-dotNET-Tests\pgvector-dotNET-Tests.csproj", "{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{90E8979C-5E8F-475E-AEDD-1B1181515773}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{CD338E83-84B5-48C8-B902-E1934CD2FC97}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +59,10 @@ Global
 		{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD338E83-84B5-48C8-B902-E1934CD2FC97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD338E83-84B5-48C8-B902-E1934CD2FC97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD338E83-84B5-48C8-B902-E1934CD2FC97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD338E83-84B5-48C8-B902-E1934CD2FC97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +74,7 @@ Global
 		{F8B5D079-FD33-4A9E-92C4-CC88C911CFF3} = {60D5DB42-01E2-48DD-8F0B-E1C79FB91E1C}
 		{C4A07BFA-A22C-463A-A882-26CDBB538A13} = {FC767E8E-42FA-4067-934B-CC7FC1437D78}
 		{9C9DA33A-4F5D-43BA-ACB3-58A35D50CE06} = {FC767E8E-42FA-4067-934B-CC7FC1437D78}
+		{CD338E83-84B5-48C8-B902-E1934CD2FC97} = {90E8979C-5E8F-475E-AEDD-1B1181515773}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {971477B1-6BBA-40CD-8B76-AEBC01D99130}

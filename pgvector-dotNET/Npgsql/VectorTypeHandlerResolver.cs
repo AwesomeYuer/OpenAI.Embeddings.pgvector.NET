@@ -2,8 +2,8 @@ using Npgsql.Internal;
 using Npgsql.Internal.TypeHandling;
 using Npgsql.PostgresTypes;
 using NpgsqlTypes;
-
-namespace Pgvector.Npgsql;
+using PgVectors.NET;
+namespace PgVectors.Npgsql;
 
 public class VectorTypeHandlerResolver : TypeHandlerResolver
 {
@@ -36,7 +36,7 @@ public class VectorTypeHandlerResolver : TypeHandlerResolver
 
     internal static string? ClrTypeToDataTypeName(Type type)
     {
-        if (type == typeof(Vector))
+        if (type == typeof(PgVector))
             return "vector";
 
         return null;

@@ -1,7 +1,7 @@
 using Npgsql.Internal;
 using Npgsql.Internal.TypeHandling;
-
-namespace Pgvector.Npgsql;
+using PgVectors.NET;
+namespace PgVectors.Npgsql;
 
 public class VectorTypeHandlerResolverFactory : TypeHandlerResolverFactory
 {

@@ -1,3 +1,48 @@
+# Windows PowerShell Run as Administrator
+
+```
+# install make
+
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+choco install make
+
+
+```
+
+```
+sudo apt-get update
+
+sudo apt install postgresql
+
+sudo nano /etc/postgresql/12/main/pg_ident.conf
+
+# add 
+# listen_addresses = '*'
+# save
+
+sudo service postgresql start
+
+sudo -u postgres psql template1
+
+ALTER USER postgres with encrypted password 'your_password';
+```
+# Docker
+```
+docker pull ankane/pgvector
+
+docker run --name test-pgvector -e POSTGRES_PASSWORD=password01! -d -p 5432:5432 ankane/pgvector
+
+
+```
+
+```
+CREATE EXTENSION vector;
+
+```
+
+
+
 # OpenAI-DotNet
 
 [![Discord](https://img.shields.io/discord/855294214065487932.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/xQgMW9ufN4)

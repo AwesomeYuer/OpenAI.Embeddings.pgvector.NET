@@ -1,26 +1,26 @@
-namespace Pgvector;
+namespace PgVectors.NET;
 
-public class Vector
+public class PgVector
 {
-    private float[] vec;
+    private float[] _pgVector;
 
-    public Vector(float[] v)
+    public PgVector(float[] v)
     {
-        vec = v;
+        _pgVector = v;
     }
 
-    public Vector(String s)
+    public PgVector(string s)
     {
-        vec = Array.ConvertAll(s.Substring(1, s.Length - 2).Split(","), v => float.Parse(v));
+        _pgVector = Array.ConvertAll(s.Substring(1, s.Length - 2).Split(","), v => float.Parse(v));
     }
 
     public override string ToString()
     {
-        return String.Concat("[", String.Join(",", vec), "]");
+        return string.Concat("[", string.Join(",", _pgVector), "]");
     }
 
     public float[] ToArray()
     {
-        return vec;
+        return _pgVector;
     }
 }
