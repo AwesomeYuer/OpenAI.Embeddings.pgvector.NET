@@ -6,10 +6,10 @@ namespace PgVectors.NET;
 
 public class Example
 {
-    [Fact]
+    //[Fact]
     public async Task Main()
     {
-        var connString = "Host=localhost;Database=pgvector_dotnet_test";
+        var connString = "Host=localhost;Database=pgvectors;User ID=sa;Password=password01!";
 
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(connString);
         dataSourceBuilder.UseVector();

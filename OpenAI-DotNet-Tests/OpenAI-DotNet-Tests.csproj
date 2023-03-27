@@ -7,6 +7,11 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="..\ConsoleApp1\.openai" Link=".openai">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.15" />
     <PackageReference Include="NUnit" Version="3.13.3" />

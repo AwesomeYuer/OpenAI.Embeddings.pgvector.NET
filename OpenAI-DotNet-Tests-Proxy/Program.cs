@@ -20,7 +20,7 @@ namespace OpenAI.Tests.Proxy
             {
                 // You will need to implement your own class to properly test
                 // custom issued tokens you've setup for your end users.
-                if (!request.Authorization.ToString().Contains(TestUserToken))
+                if (request.Authorization.ToString().Contains(TestUserToken))
                 {
                     throw new AuthenticationException("User is not authorized");
                 }

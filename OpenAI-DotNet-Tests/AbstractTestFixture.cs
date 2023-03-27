@@ -15,7 +15,7 @@ namespace OpenAI.Tests
             }
         }
 
-        internal const string TestUserToken = "sess-aAbBcCdDeE123456789";
+        //internal const string TestUserToken = "sess-aAbBcCdDeE123456789";
 
         protected readonly HttpClient HttpClient;
 
@@ -27,7 +27,8 @@ namespace OpenAI.Tests
             HttpClient = webApplicationFactory.CreateClient();
             var domain = $"{HttpClient.BaseAddress?.Authority}:{HttpClient.BaseAddress?.Port}";
             var settings = new OpenAIClientSettings(domain: domain);
-            var auth = new OpenAIAuthentication(TestUserToken);
+            // var auth = new OpenAIAuthentication(TestUserToken);
+            var auth = OpenAIAuthentication.LoadFromDirectory();
             OpenAIClient = new OpenAIClient(auth, settings, HttpClient);
         }
     }
