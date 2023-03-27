@@ -12,7 +12,7 @@ var auth = OpenAIAuthentication.LoadFromDirectory();
 
 var openAIClient = new OpenAIClient(auth);
 
-var inputEmbeddings = new[]
+var preservedEmbeddings = new[]
 {
       "The food was delicious and the waiter..."
     , "The food was terrible and the waiter..."
@@ -26,11 +26,14 @@ var inputEmbeddings = new[]
     , "尿"
     , "屁"
     , "龙虾"
+    , "c#"
+    , "php"
+    , "Java"
 }
 ;
 
 var i = 0;
-var sql = inputEmbeddings
+var sql = preservedEmbeddings
                     .Select
                         (
                             (x) =>
@@ -57,7 +60,7 @@ var model = await openAIClient
 
 var result = await openAIClient
                         .EmbeddingsEndpoint
-                        .CreateEmbeddingAsync(inputEmbeddings, model);
+                        .CreateEmbeddingAsync(preservedEmbeddings, model);
 i = 0;
 var embeddings = result
                     .Data
@@ -67,7 +70,7 @@ var embeddings = result
                             {
                                 return
                                     (
-                                        inputEmbeddings[i ++]
+                                        preservedEmbeddings[i ++]
                                         , new PgVector
                                                     (
                                                         e
@@ -115,6 +118,8 @@ adHocQuery = "C#";
 adHocQuery = "php";
 adHocQuery = "Java";
 adHocQuery = "螃蟹好吃";
+adHocQuery = "JavaScript";
+
 
 Console.WriteLine($@"{nameof(adHocQuery)}: ""{adHocQuery}"" match similarity:");
 Console.WriteLine();
