@@ -3,6 +3,7 @@ using Npgsql;
 using OpenAI;
 using PgVectors.NET;
 using PgVectors.Npgsql;
+using System.Data;
 using System.Data.Common;
 
 Console.WriteLine("Hello, World!");
@@ -95,14 +96,14 @@ using var npgsqlDataSource = dataSourceBuilder.Build();
 using var connection = npgsqlDataSource.OpenConnection();
 
 // Preserve the vectors of contents of embeddings for match
-await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
+await using (var sqlCommand = new NpgsqlCommand(sql, connection))
 {
     foreach (var (content , pgVector) in embeddings)
     {
-        npgsqlCommand.Parameters.AddWithValue(content);
-        npgsqlCommand.Parameters.AddWithValue(pgVector);
+        sqlCommand.Parameters.AddWithValue(content);
+        sqlCommand.Parameters.AddWithValue(pgVector);
     }
-    await npgsqlCommand.ExecuteNonQueryAsync();
+    await sqlCommand.ExecuteNonQueryAsync();
 }
 
 var adHocQuery = "shit";
@@ -146,18 +147,21 @@ var adHocQueryEmbedding = result
                                 .ToArray()
                                 ;
 
-await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
+await using (var sqlCommand = new NpgsqlCommand(sql, connection))
 {
-    npgsqlCommand.Parameters.AddWithValue(adHocQueryEmbedding);
+    sqlCommand.Parameters.AddWithValue(adHocQueryEmbedding);
     var seperator = "\t\t\t\t";
-    await using (DbDataReader dataReader = await npgsqlCommand.ExecuteReaderAsync())
+    await using (DbDataReader dataReader = await sqlCommand.ExecuteReaderAsync())
     {
         while (await dataReader.ReadAsync())
         {
+            IDataRecord dataRecord = dataReader;
+            var averageDistance = dataReader.GetDouble(dataRecord.GetOrdinal("AverageDistance"));
+            var preservedContent = dataReader.GetString(dataRecord.GetOrdinal("content"));
             Console
                 .WriteLine
                         (
-                            $@"{nameof(adHocQuery)}: ""{adHocQuery}"", AverageDistance: [{(double) dataReader["AverageDistance"]}]{seperator}, preserved content: ""{(string) dataReader["content"]}"""
+                            $@"{nameof(adHocQuery)}: ""{adHocQuery}"", {nameof(averageDistance)}: [{averageDistance}]{seperator}, {nameof(preservedContent)}: ""{preservedContent}"""
                         );
         }
     }
