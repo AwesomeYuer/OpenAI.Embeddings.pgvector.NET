@@ -160,7 +160,7 @@ CREATE INDEX IF NOT EXISTS my_index
     TABLESPACE pg_default;
 ```
 
-- Query matched preserved content sort by similarity
+- Query matched preserved contents sort by similarity
 ```sql
 
 -- Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
