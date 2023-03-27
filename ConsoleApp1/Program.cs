@@ -157,7 +157,7 @@ await using (var npgsqlCommand = new NpgsqlCommand(sql, connection))
             Console
                 .WriteLine
                         (
-                            $@"{nameof(adHocQuery)}: ""{adHocQuery}"", AverageDistance: [{(double) dataReader["AverageDistance"]}]{seperator}, content: ""{(string) dataReader["content"]}"""
+                            $@"{nameof(adHocQuery)}: ""{adHocQuery}"", AverageDistance: [{(double) dataReader["AverageDistance"]}]{seperator}, preserved content: ""{(string) dataReader["content"]}"""
                         );
         }
     }
