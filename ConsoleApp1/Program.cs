@@ -123,12 +123,13 @@ WHEN
 
 
 //return;
-//var model = await openAIClient
-//                        .ModelsEndpoint
-//                        .GetModelDetailsAsync
-//                                ("text-embedding-ada-002");
+var model = await openAIClient
+                        .ModelsEndpoint
+                        .GetModelDetailsAsync
+                                ("text-embedding-ada-002");
 
-var model = Model.Embedding_Ada_002;
+//var 
+//model = Model.Embedding_Ada_002;
 
 var result = await openAIClient
                         .EmbeddingsEndpoint
