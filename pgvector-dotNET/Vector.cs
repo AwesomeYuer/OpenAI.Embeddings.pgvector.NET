@@ -1,6 +1,7 @@
+
 namespace PgVectors.NET;
 
-public class PgVector
+public class PgVector : IEquatable<PgVector>
 {
     private float[] _pgVector;
 
@@ -22,5 +23,38 @@ public class PgVector
     public float[] ToArray()
     {
         return _pgVector;
+    }
+
+    public bool Equals(PgVector? other)
+    {
+        return other! == this;
+    }
+
+    public static bool operator == (PgVector x, PgVector y)
+    {
+        var xx = x.ToArray();
+        var yy = y.ToArray();
+
+        var r = xx.Length == yy.Length;
+        if (r)
+        {
+            r = xx.SequenceEqual(yy);
+        }
+        return r;
+    }
+    
+    public static bool operator != (PgVector x, PgVector y)
+    {
+        return !(x == y);
+    }
+
+    public override int GetHashCode()
+    {
+        return ToString().GetHashCode();
+    }
+
+    public override bool Equals(object? @object)
+    {
+        return Equals(@object as PgVector);
     }
 }
