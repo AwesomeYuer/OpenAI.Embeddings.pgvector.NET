@@ -236,7 +236,7 @@ as
 )
 SELECT
       a.*
-    , 1.0 * (a.""LatestDistance"" - a.""EarliestDistance"") as ""DiffDistance""
+    , (a.""LatestDistance"" - a.""EarliestDistance"") as ""DiffDistance""
 FROM
     T1 a
 ORDER BY
