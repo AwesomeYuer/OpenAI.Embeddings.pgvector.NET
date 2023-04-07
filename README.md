@@ -202,8 +202,8 @@ as
 (
     SELECT
           "Content"
-        , "EarliestEmbedding" 	<-> (table v)       as "EarliestDistance"
-        , "Embedding"   		<-> (table v)       as "Distance"
+        , "EarliestEmbedding"   <-> (table v)       as "EarliestDistance"
+        , "Embedding"           <-> (table v)       as "Distance"
         , "EarliestEmbeddingHash"
         , (table v)                                 as "AdHocQueryInputEmbedding"
         , "EmbeddingHash"
