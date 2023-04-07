@@ -214,7 +214,7 @@ as
 )
 SELECT
       a.*
-    , (a."Distance" - a."EarliestDistance") as "DiffDistance"
+    , (a."Distance" - a."EarliestDistance")         as "DiffDistance"
 FROM
     T1 a
 ORDER BY
