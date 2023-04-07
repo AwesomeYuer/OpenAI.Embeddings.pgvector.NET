@@ -84,25 +84,25 @@ as
         *
     FROM
         ""ContentsEmbeddings"" as a
-    where
-        not exists
+    WHERE
+        NOT EXISTS
             (
-                select
+                SELECT
                     1
-                from
+                FROM
                     ""ContentsEmbeddings"" as aa
-                where
+                WHERE
                     aa.""ContentHash"" = a.""ContentHash""
-                    and
+                    AND
                     aa.""ID"" < a.""ID""
-                    and
-                    exists
+                    AND
+                    EXISTS
                         (
-                            select
+                            SELECT
                                 1
-                            from
+                            FROM
                                 T1 aaa
-                            where
+                            WHERE
                                 aaa.""ContentHash"" = a.""ContentHash""
                         ) 
             )
@@ -121,16 +121,16 @@ USING
             , aaa.""Embedding""
         FROM
             T1 as aaa
-                left join
+                LEFT JOIN
                     T2 bbb
-                        on
+                        ON
                             aaa.""ContentHash"" = bbb.""ContentHash""
     ) AS aa
 ON
     aa.""ContentHash"" = a.""ContentHash""
-    and
+    AND
     aa.""EmbeddingHash"" = a.""EmbeddingHash""
-    and
+    AND
     aa.""Embedding"" = a.""Embedding""
 WHEN
     MATCHED
