@@ -14,7 +14,7 @@
  ```
  微博正文
 
-宝玉xp 
+宝玉xp (<= 感谢)
 3-16 14:38 来自 微博网页版 已编辑
 上一篇 网页链接 介绍的Supabase技术文档接入AI搜索后，能支持自然语言，能写代码，甚至能debug，估计很多人好奇它是怎么实现的。
 
@@ -237,7 +237,6 @@ OpenAI.Embeddings.pgvector.NET\ConsoleApp1\ConsoleApp1.csproj
     OPEN_AI_ORGANIZATION_ID=org-YYYYYYYY
     ORGANIZATION=org-YYYYYYYY
     ```
-
 
 # OpenAI-DotNet
 
