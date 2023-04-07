@@ -5,7 +5,11 @@
   ![screenshot](ConsoleApp1/assets/screenshot.png)
 
  # References and Thanks for `Open Source` and `Internet`
-- Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
+ - Why `OpenAI Embedding` return different vectors for the same text input?
+    https://community.openai.com/t/why-openai-embedding-return-different-vectors-for-the-same-text-input/144495
+
+
+ - Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
 
     https://github.com/gannonh/gpt3.5-turbo-pgvector
 
@@ -127,7 +131,7 @@ CREATE ROLE sa WITH
   CREATEDB
   CREATEROLE
   REPLICATION
-  PASSWORD 'password02!';
+  PASSWORD 'password01!';
 ```
 
 - Switch to database `pgVectors` on `pgAmin` and then:
