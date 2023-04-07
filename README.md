@@ -203,7 +203,7 @@ as
           "Content"
         , "EarliestEmbedding" <-> (table v) as "EarliestDistance"
         , "LatestEmbedding"   <-> (table v) as "LatestDistance"
-        , (table v)                         as "AdHocEmbedding"
+        , (table v)                         as "AdHocQueryEmbedding"
         , "EarliestEmbeddingHash"
         , "LatestEmbeddingHash"
         , "UpdateTime"
