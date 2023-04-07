@@ -226,7 +226,7 @@ as
           ""Content""
         , ""EarliestEmbedding"" <-> $1::vector      as ""EarliestDistance""
         , ""LatestEmbedding""   <-> $1::vector      as ""LatestDistance""
-        , $1                                        as ""adHocEmbedding""
+        , $1                                        as ""AdHocQueryEmbedding""
         , ""EarliestEmbeddingHash""
         , ""LatestEmbeddingHash""
         , ""UpdateTime""
