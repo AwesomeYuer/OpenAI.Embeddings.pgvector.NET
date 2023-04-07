@@ -19,20 +19,22 @@ var openAIClient = new OpenAIClient(auth);
 var preservedEmbeddings = new[]
 {
       "The food was delicious and the waiter..."
-    //, "The food was terrible and the waiter..."
-    //, "麻婆豆腐是美味"
-    //, "coffee is not good"
-    //, "tea is good"
-    //, "coke is bad"
-    //, "apple is very very good"
-    //, "臭豆腐"
-    //, "屎"
-    //, "尿"
-    //, "屁"
-    //, "龙虾"
-    //, "c#"
-    //, "php"
-    //, "Java"
+    , "The food was terrible and the waiter..."
+    , "麻婆豆腐是美味"
+    , "coffee is not good"
+    , "tea is good"
+    , "coke is bad"
+    , "apple is very very good"
+    , "臭豆腐"
+    , "屎"
+    , "尿"
+    , "屁"
+    , "龙虾"
+    , "c#"
+    , "php"
+    , "Java"
+    , "我爱祖国"
+    , "狼吃肉狗吃屎"
 }
 ;
 
@@ -134,7 +136,6 @@ ON
     aa.""Embedding"" = a.""Embedding""
 WHEN
     MATCHED
-
         THEN
             UPDATE
             SET
@@ -142,33 +143,28 @@ WHEN
                 , ""UpdateTime"" = NOW()
 WHEN
     NOT MATCHED
-            THEN
-                INSERT
-                    (
-                          ""Content""
-                        , ""ContentHash""
-                        , ""EarliestEmbeddingHash""
-                        , ""EarliestEmbedding""
-                        , ""EarliestEmbeddingCreateTime""
-                        , ""EmbeddingHash""
-                        , ""Embedding""
-                    )
-                VALUES
-                    (
-                          aa.""Content""
-                        , aa.""ContentHash""
-                        , coalesce(aa.""EarliestEmbeddingHash""         , aa.""EmbeddingHash""  )
-                        , coalesce(aa.""EarliestEmbedding""             , aa.""Embedding""      )
-                        , coalesce(aa.""EarliestEmbeddingCreateTime""   , NOW()                 )
-                        , aa.""EmbeddingHash""
-                        , aa.""Embedding""
-                    )
-                            
-                        
-                
+        THEN
+            INSERT
+                (
+                        ""Content""
+                    , ""ContentHash""
+                    , ""EarliestEmbeddingHash""
+                    , ""EarliestEmbedding""
+                    , ""EarliestEmbeddingCreateTime""
+                    , ""EmbeddingHash""
+                    , ""Embedding""
+                )
+            VALUES
+                (
+                      aa.""Content""
+                    , aa.""ContentHash""
+                    , coalesce(aa.""EarliestEmbeddingHash""         , aa.""EmbeddingHash""  )
+                    , coalesce(aa.""EarliestEmbedding""             , aa.""Embedding""      )
+                    , coalesce(aa.""EarliestEmbeddingCreateTime""   , NOW()                 )
+                    , aa.""EmbeddingHash""
+                    , aa.""Embedding""
+                )
 ";
-
-
 
 var model = await openAIClient
                         .ModelsEndpoint
@@ -224,15 +220,19 @@ await using (var sqlCommand = new NpgsqlCommand(sql, connection))
 {
     foreach (var (content, pgVector) in embeddings)
     {
+        // 1
         sqlCommand.Parameters.AddWithValue(content);
 
+        // 2
         var bytes = Encoding.UTF8.GetBytes(content);
         bytes = sha256.ComputeHash(bytes);
         string hexString = BitConverter.ToString(bytes).Replace("-", string.Empty);
         sqlCommand.Parameters.AddWithValue(hexString);
         
+        // 3
         sqlCommand.Parameters.AddWithValue(pgVector);
 
+        // 4
         bytes = Encoding.UTF8.GetBytes(pgVector.ToString());
         bytes = sha256.ComputeHash(bytes);
         hexString = BitConverter.ToString(bytes).Replace("-", string.Empty);
@@ -241,7 +241,7 @@ await using (var sqlCommand = new NpgsqlCommand(sql, connection))
     await sqlCommand.ExecuteNonQueryAsync();
 }
 
-return;
+//return;
 var adHocQuery = "shit";
 adHocQuery = "苹果";
 adHocQuery = "佛跳墙";
@@ -284,23 +284,33 @@ as
         , ""UpdateTime""
         , ""CreateTime""
     FROM
-        ""Items""
+        ""ContentsEmbeddings""
+)
+,
+T2
+as
+(
+    SELECT
+          MAX(a.""Content"")                    as ""Content""
+        , a.""ContentHash""
+        , COUNT(DISTINCT a.""EmbeddingHash"")   as ""CountOfEmbeddings""
+        , AVG(a.""Distance"")                   as ""AverageOfDistance""
+        , MAX(a.""Distance"")                   as ""MaxOfDistance""
+        , MIN(a.""Distance"")                   as ""MinOfDistance""
+        , MIN(a.""CreateTime"")                 as ""EarliestEmbeddingTime""
+        , MAX(a.""CreateTime"")                 as ""LatestEmbeddingTime""
+    FROM
+        T1 a
+    GROUP BY
+          a.""ContentHash""
 )
 SELECT
-      MAX(a.""Content"")            as ""Content""
-    , a.""ContentHash""
-    , a.""EmbeddingHash""
-    , MAX(a.""Distance"")           as ""Distance""
-    , MAX(a.""EmbeddingsCount"")    as ""EmbeddingsCount""
-    , MIN(a.""CreateTime"")         as ""CreateTime""
-    , MAX(a.""UpdateTime"")         as ""UpdateTime""
+      a.*
+    , (a.""MaxOfDistance"" - a.""MinOfDistance"") as ""DiffOfMaxMinDistance""
 FROM
-    T1 a
-GROUP BY
-      a.""ContentHash""
-    , a.""EmbeddingHash""
+    T2 a
 ORDER BY
-    3;
+    a.""AverageOfDistance"";
 --1
 "
 ;
@@ -330,15 +340,19 @@ await using (var sqlCommand = new NpgsqlCommand(sql, connection))
         
         while (await dataReader.ReadAsync())
         {
-            IDataRecord dataRecord = dataReader;
-            var earliestDistance = dataReader.GetDouble(dataRecord.GetOrdinal("EarliestDistance"));
-            var latestDistance = dataReader.GetDouble(dataRecord.GetOrdinal("LatestDistance"));
-            var diffDistance = dataReader.GetDouble(dataRecord.GetOrdinal("DiffDistance"));
-            var preservedContent = dataReader.GetString(dataRecord.GetOrdinal("Content"));
+            IDataRecord dataRecord      = dataReader;
+            var averageOfDistance       = dataReader.GetDouble(dataRecord.GetOrdinal("AverageOfDistance"));
+            var countOfEmbeddings       = dataReader.GetInt32(dataRecord.GetOrdinal("CountOfEmbeddings"));
+            var maxOfDistance           = dataReader.GetDouble(dataRecord.GetOrdinal("MaxOfDistance"));
+            var minOfDistance           = dataReader.GetDouble(dataRecord.GetOrdinal("MinOfDistance"));
+            var diffOfMaxMinDistance    = dataReader.GetDouble(dataRecord.GetOrdinal("DiffOfMaxMinDistance"));
+            var earliestEmbeddingTime   = dataReader.GetDateTime(dataRecord.GetOrdinal("EarliestEmbeddingTime"));
+            var latestEmbeddingTime     = dataReader.GetDateTime(dataRecord.GetOrdinal("LatestEmbeddingTime"));
+            var preservedContent        = dataReader.GetString(dataRecord.GetOrdinal("Content"));
             Console
                 .WriteLine
                         (
-                            $@"{nameof(adHocQuery)}: ""{adHocQuery}({adHocQueryHashCode})"", {nameof(latestDistance)}: [{latestDistance}]{seperator},{nameof(earliestDistance)}: [{earliestDistance}]{seperator},{nameof(diffDistance)}: [{diffDistance}]{seperator},{nameof(preservedContent)}: ""{preservedContent}"""
+                            $@"{nameof(adHocQuery)}: ""{adHocQuery}"", {nameof(averageOfDistance)}: [{averageOfDistance}]{seperator},{nameof(diffOfMaxMinDistance)}: [{diffOfMaxMinDistance}]{seperator},{nameof(countOfEmbeddings)}: [{countOfEmbeddings}]{seperator},{nameof(preservedContent)}: ""{preservedContent}"""
                         );
             
             //Console

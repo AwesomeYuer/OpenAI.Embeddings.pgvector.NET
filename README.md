@@ -140,85 +140,47 @@ CREATE ROLE sa WITH
 CREATE EXTENSION vector;
 ```
 
-- create the table named `items`:
+- create the table named `ContentsEmbeddings`:
 ```sql
--- Table: public.Items
+-- Table: public.ContentsEmbeddings
 
--- DROP TABLE IF EXISTS public."Items";
+-- DROP TABLE IF EXISTS public."ContentsEmbeddings";
 
-CREATE TABLE IF NOT EXISTS public."Items"
+CREATE TABLE IF NOT EXISTS public."ContentsEmbeddings"
 (
     "ID" bigserial,
     "Content" character varying(65536) COLLATE pg_catalog."default",
     "ContentHash" character varying(64) COLLATE pg_catalog."default",
-    "EarliestEmbeddingHash" bigint,
-    "LatestEmbeddingHash" bigint,
+    "EarliestEmbeddingHash" character varying(64) COLLATE pg_catalog."default",
     "EarliestEmbedding" vector(1536),
-    "LatestEmbedding" vector(1536),
-    "CreateTime" timestamp without time zone DEFAULT 'now()',
-    "UpdateTime" timestamp without time zone DEFAULT 'now()'
+    "EarliestEmbeddingCreateTime" timestamp without time zone,
+    "EmbeddingHash" character varying(64) COLLATE pg_catalog."default",
+    "Embedding" vector(1536),
+    "EmbeddingCount" integer DEFAULT 1,
+    "CreateTime" timestamp without time zone DEFAULT now(),
+    "UpdateTime" timestamp without time zone DEFAULT now()
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public."Items"
+ALTER TABLE IF EXISTS public."ContentsEmbeddings"
     OWNER to sa;
--- Index: Unique_ContentHash
+-- Index: Unique_btree_ContentsEmbeddingsHash
 
--- DROP INDEX IF EXISTS public."Unique_ContentHash";
+-- DROP INDEX IF EXISTS public."Unique_btree_ContentsEmbeddingsHash";
 
-CREATE UNIQUE INDEX IF NOT EXISTS "Unique_ContentHash"
-    ON public."Items" USING btree
-    ("ContentHash" COLLATE pg_catalog."default" ASC NULLS LAST)
+CREATE UNIQUE INDEX IF NOT EXISTS "Unique_btree_ContentsEmbeddingsHash"
+    ON public."ContentsEmbeddings" USING btree
+    ("ContentHash" COLLATE pg_catalog."default" ASC NULLS LAST, "EmbeddingHash" COLLATE pg_catalog."default" ASC NULLS LAST)
     TABLESPACE pg_default;
--- Index: ivfflat_latestembedding
+-- Index: ivfflat_embedding
 
--- DROP INDEX IF EXISTS public.ivfflat_latestembedding;
+-- DROP INDEX IF EXISTS public.ivfflat_embedding;
 
-CREATE INDEX IF NOT EXISTS ivfflat_latestembedding
-    ON public."Items" USING ivfflat
-    ("LatestEmbedding")
+CREATE INDEX IF NOT EXISTS ivfflat_embedding
+    ON public."ContentsEmbeddings" USING ivfflat
+    ("Embedding")
     TABLESPACE pg_default;
-```
-
-- Query matched preserved contents sort by similarity
-```sql
-
--- Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
--- The distance means similarity
-
-WITH
-v AS
-    (
-        VALUES
-        (
-            '[1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,11,11,1,1,1,11,1,1,1,1,1,1,1,1,1,11,1,1,1,1,1]'::vector
-        )
-    )
-,
-T1
-as
-(
-    SELECT
-          "Content"
-        , "EarliestEmbedding" <-> (table v) as "EarliestDistance"
-        , "LatestEmbedding"   <-> (table v) as "LatestDistance"
-        , (table v)                         as "AdHocQueryEmbedding"
-        , "EarliestEmbeddingHash"
-        , "LatestEmbeddingHash"
-        , "UpdateTime"
-        , "CreateTime"
-    FROM
-        "Items"
-)
-SELECT
-      a.*
-    , (a."LatestDistance" - a."EarliestDistance") as "DiffDistance"
-FROM
-    T1 a
-ORDER BY
-    3;
-
 ```
 
 # Run/Debug program/project entry:
