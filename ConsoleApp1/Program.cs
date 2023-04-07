@@ -44,7 +44,7 @@ var sql = preservedEmbeddings
                             (x) =>
                             {
                                 return
-                                    $"(${++i}, ${++i} ,${++i} ,${++i})";
+                                    $"(${++i}, ${++i} , ${++i}, ${++i})";
                             }
                         )
                     .Aggregate
