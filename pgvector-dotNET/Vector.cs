@@ -48,10 +48,10 @@ public class PgVector : IEquatable<PgVector>
         return !(x == y);
     }
 
-    public override int GetHashCode()
-    {
-        return ToString().GetHashCode();
-    }
+    //public override int GetHashCode()
+    //{
+    //    return ToString().GetHashCode();
+    //}
 
     public override bool Equals(object? @object)
     {

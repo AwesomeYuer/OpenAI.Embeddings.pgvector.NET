@@ -19,20 +19,20 @@ var openAIClient = new OpenAIClient(auth);
 var preservedEmbeddings = new[]
 {
       "The food was delicious and the waiter..."
-    , "The food was terrible and the waiter..."
-    , "麻婆豆腐是美味"
-    , "coffee is not good"
-    , "tea is good"
-    , "coke is bad"
-    , "apple is very very good"
-    , "臭豆腐"
-    , "屎"
-    , "尿"
-    , "屁"
-    , "龙虾"
-    , "c#"
-    , "php"
-    , "Java"
+    //, "The food was terrible and the waiter..."
+    //, "麻婆豆腐是美味"
+    //, "coffee is not good"
+    //, "tea is good"
+    //, "coke is bad"
+    //, "apple is very very good"
+    //, "臭豆腐"
+    //, "屎"
+    //, "尿"
+    //, "屁"
+    //, "龙虾"
+    //, "c#"
+    //, "php"
+    //, "Java"
 }
 ;
 
@@ -76,28 +76,70 @@ as
             , ""EmbeddingHash""
         )
 )
-MERGE INTO ""Items"" a
+,
+T2
+as
+(
+    SELECT
+        *
+    FROM
+        ""ContentsEmbeddings"" as a
+    where
+        not exists
+            (
+                select
+                    1
+                from
+                    ""ContentsEmbeddings"" as aa
+                where
+                    aa.""ContentHash"" = a.""ContentHash""
+                    and
+                    aa.""ID"" < a.""ID""
+                    and
+                    exists
+                        (
+                            select
+                                1
+                            from
+                                T1 aaa
+                            where
+                                aaa.""ContentHash"" = a.""ContentHash""
+                        ) 
+            )
+
+)
+MERGE INTO ""ContentsEmbeddings"" a
 USING
     (
-        SELECT
-            *
+        SELECT  
+              aaa.""Content""
+            , aaa.""ContentHash""
+            , bbb.""EmbeddingHash""     as ""EarliestEmbeddingHash""
+            , bbb.""Embedding""         as ""EarliestEmbedding""
+            , bbb.""CreateTime""        as ""EarliestEmbeddingCreateTime""
+            , aaa.""EmbeddingHash""
+            , aaa.""Embedding""
         FROM
-            T1
+            T1 as aaa
+                left join
+                    T2 bbb
+                        on
+                            aaa.""ContentHash"" = bbb.""ContentHash""
     ) AS aa
 ON
     aa.""ContentHash"" = a.""ContentHash""
+    and
+    aa.""EmbeddingHash"" = a.""EmbeddingHash""
+    and
+    aa.""Embedding"" = a.""Embedding""
 WHEN
     MATCHED
-    AND
-    a.""LatestEmbedding"" != aa.""Embedding""
-    AND
-    a.""LatestEmbeddingHash"" != aa.""EmbeddingHash""
-            THEN
-                UPDATE
-                SET
-                      ""LatestEmbedding"" = aa.""Embedding""
-                    , ""LatestEmbeddingHash"" = aa.""EmbeddingHash""
-                    , ""UpdateTime"" = NOW()
+
+        THEN
+            UPDATE
+            SET
+                  ""EmbeddingCount"" = ""EmbeddingCount"" + 1
+                , ""UpdateTime"" = NOW()
 WHEN
     NOT MATCHED
             THEN
@@ -106,23 +148,28 @@ WHEN
                           ""Content""
                         , ""ContentHash""
                         , ""EarliestEmbeddingHash""
-                        , ""LatestEmbeddingHash""
                         , ""EarliestEmbedding""
-                        , ""LatestEmbedding""
+                        , ""EarliestEmbeddingCreateTime""
+                        , ""EmbeddingHash""
+                        , ""Embedding""
                     )
-                VALUES 
+                VALUES
                     (
                           aa.""Content""
                         , aa.""ContentHash""
-                        , aa.""EmbeddingHash""
+                        , coalesce(aa.""EarliestEmbeddingHash""         , aa.""EmbeddingHash""  )
+                        , coalesce(aa.""EarliestEmbedding""             , aa.""Embedding""      )
+                        , coalesce(aa.""EarliestEmbeddingCreateTime""   , NOW()                 )
                         , aa.""EmbeddingHash""
                         , aa.""Embedding""
-                        , aa.""Embedding""
-                    );
+                    )
+                            
+                        
+                
 ";
 
 
-//return;
+
 var model = await openAIClient
                         .ModelsEndpoint
                         .GetModelDetailsAsync
@@ -177,18 +224,24 @@ await using (var sqlCommand = new NpgsqlCommand(sql, connection))
 {
     foreach (var (content, pgVector) in embeddings)
     {
+        sqlCommand.Parameters.AddWithValue(content);
+
         var bytes = Encoding.UTF8.GetBytes(content);
         bytes = sha256.ComputeHash(bytes);
         string hexString = BitConverter.ToString(bytes).Replace("-", string.Empty);
-        var hashCode = pgVector.GetHashCode();
-        sqlCommand.Parameters.AddWithValue(content);
         sqlCommand.Parameters.AddWithValue(hexString);
+        
         sqlCommand.Parameters.AddWithValue(pgVector);
-        sqlCommand.Parameters.AddWithValue(hashCode);
+
+        bytes = Encoding.UTF8.GetBytes(pgVector.ToString());
+        bytes = sha256.ComputeHash(bytes);
+        hexString = BitConverter.ToString(bytes).Replace("-", string.Empty);
+        sqlCommand.Parameters.AddWithValue(hexString);
     }
     await sqlCommand.ExecuteNonQueryAsync();
 }
 
+return;
 var adHocQuery = "shit";
 adHocQuery = "苹果";
 adHocQuery = "佛跳墙";
@@ -224,21 +277,28 @@ as
 (
     SELECT
           ""Content""
-        , ""EarliestEmbedding"" <-> $1::vector      as ""EarliestDistance""
-        , ""LatestEmbedding""   <-> $1::vector      as ""LatestDistance""
-        , $1                                        as ""AdHocQueryEmbedding""
-        , ""EarliestEmbeddingHash""
-        , ""LatestEmbeddingHash""
+        , ""ContentHash""
+        , ""EmbeddingHash""
+        , ""Embedding"" <-> $1::vector      as ""Distance""
+        --, $1                              as ""AdHocQueryEmbedding""
         , ""UpdateTime""
         , ""CreateTime""
     FROM
         ""Items""
 )
 SELECT
-      a.*
-    , (a.""LatestDistance"" - a.""EarliestDistance"") as ""DiffDistance""
+      MAX(a.""Content"")            as ""Content""
+    , a.""ContentHash""
+    , a.""EmbeddingHash""
+    , MAX(a.""Distance"")           as ""Distance""
+    , MAX(a.""EmbeddingsCount"")    as ""EmbeddingsCount""
+    , MIN(a.""CreateTime"")         as ""CreateTime""
+    , MAX(a.""UpdateTime"")         as ""UpdateTime""
 FROM
     T1 a
+GROUP BY
+      a.""ContentHash""
+    , a.""EmbeddingHash""
 ORDER BY
     3;
 --1
