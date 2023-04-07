@@ -14,7 +14,7 @@ var auth = OpenAIAuthentication.LoadFromDirectory();
 
 var openAIClient = new OpenAIClient(auth);
 
-var preservedEmbeddings = new[]
+var preservedEmbeddingsInputs = new[]
 {
       "The food was delicious and the waiter..."
     , "The food was terrible and the waiter..."
@@ -37,7 +37,7 @@ var preservedEmbeddings = new[]
 ;
 
 var i = 0;
-var sql = preservedEmbeddings
+var sql = preservedEmbeddingsInputs
                     //.Take(2)
                     .Select
                         (
@@ -174,7 +174,7 @@ var model = await openAIClient
 
 var result = await openAIClient
                         .EmbeddingsEndpoint
-                        .CreateEmbeddingAsync(preservedEmbeddings, model);
+                        .CreateEmbeddingAsync(preservedEmbeddingsInputs, model);
 i = 0;
 var embeddings = result
                     .Data
@@ -184,7 +184,7 @@ var embeddings = result
                             {
                                 return
                                     (
-                                        preservedEmbeddings[i ++]
+                                        preservedEmbeddingsInputs[i ++]
                                         , new PgVector
                                                     (
                                                         e
@@ -240,26 +240,26 @@ await using (var sqlCommand = new NpgsqlCommand(sql, connection))
 }
 
 //return;
-var adHocQuery = "shit";
-adHocQuery = "苹果";
-adHocQuery = "佛跳墙";
-adHocQuery = "尿素";
-adHocQuery = "好吃的";
-adHocQuery = "C#";
-adHocQuery = "php";
-adHocQuery = "Java";
-adHocQuery = "螃蟹好吃";
-adHocQuery = "JavaScript";
+var adHocQueryInput     = "shit";
+adHocQueryInput         = "苹果";
+adHocQueryInput         = "佛跳墙";
+adHocQueryInput         = "尿素";
+adHocQueryInput         = "好吃的";
+adHocQueryInput         = "C#";
+adHocQueryInput         = "php";
+adHocQueryInput         = "Java";
+adHocQueryInput         = "螃蟹好吃";
+adHocQueryInput         = "JavaScript";
 
 
-Console.WriteLine($@"{nameof(adHocQuery)}: ""{adHocQuery}"" match similarity:");
+Console.WriteLine($@"{nameof(adHocQueryInput)}: ""{adHocQueryInput}"" match similarity:");
 Console.WriteLine();
 Console.WriteLine();
 
 result = await openAIClient
                         .EmbeddingsEndpoint
                         .CreateEmbeddingAsync
-                                (adHocQuery, model);
+                                (adHocQueryInput, model);
 
 // Query match similarity
 // Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
@@ -335,7 +335,6 @@ await using (var sqlCommand = new NpgsqlCommand(sql, connection))
 
     await using (DbDataReader dataReader = await sqlCommand.ExecuteReaderAsync())
     {
-        
         while (await dataReader.ReadAsync())
         {
             IDataRecord dataRecord      = dataReader;
@@ -350,7 +349,7 @@ await using (var sqlCommand = new NpgsqlCommand(sql, connection))
             Console
                 .WriteLine
                         (
-                            $@"{nameof(adHocQuery)}: ""{adHocQuery}"", {nameof(averageOfDistance)}: [{averageOfDistance}]{seperator},{nameof(diffOfMaxMinDistance)}: [{diffOfMaxMinDistance}]{seperator},{nameof(countOfEmbeddings)}: [{countOfEmbeddings}]{seperator},{nameof(preservedContent)}: ""{preservedContent}"""
+                            $@"{nameof(adHocQueryInput)}: ""{adHocQueryInput}"", {nameof(averageOfDistance)}: [{averageOfDistance}]{seperator},{nameof(diffOfMaxMinDistance)}: [{diffOfMaxMinDistance}]{seperator},{nameof(countOfEmbeddings)}: [{countOfEmbeddings}]{seperator},{nameof(preservedContent)}: ""{preservedContent}"""
                         );
             
             //Console
