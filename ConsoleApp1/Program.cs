@@ -146,7 +146,7 @@ WHEN
         THEN
             INSERT
                 (
-                        ""Content""
+                      ""Content""
                     , ""ContentHash""
                     , ""EarliestEmbeddingHash""
                     , ""EarliestEmbedding""
