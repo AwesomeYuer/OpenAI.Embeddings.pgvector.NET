@@ -358,6 +358,5 @@ await using (var sqlCommand = new NpgsqlCommand(sql, connection))
             //Console
             //    .WriteLine(dataReader.GetFieldValue<PgVector>(3).GetHashCode() == dataReader.GetFieldValue<PgVector>(3).GetHashCode());
         }
-        
     }
 }
