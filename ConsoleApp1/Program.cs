@@ -52,7 +52,7 @@ var sql = preservedEmbeddings
                             (x, y) =>
                             {
                                 return
-                                    $"{x}\r\n,{y}";
+                                    $"{x}\r\n, {y}";
                             }
                         );
 
