@@ -6,6 +6,7 @@
 
  # References and Thanks for `Open Source` and `Internet`
  - Why `OpenAI Embedding` return different vectors for the same text input?
+
     https://community.openai.com/t/why-openai-embedding-return-different-vectors-for-the-same-text-input/144495
 
 
@@ -18,7 +19,7 @@
  ```
  微博正文
 
-宝玉xp (<= 感谢)
+@宝玉xp (<= 感谢)
 3-16 14:38 来自 微博网页版 已编辑
 上一篇 网页链接 介绍的Supabase技术文档接入AI搜索后，能支持自然语言，能写代码，甚至能debug，估计很多人好奇它是怎么实现的。
 
