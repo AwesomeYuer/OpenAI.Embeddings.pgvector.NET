@@ -38,23 +38,23 @@ var preservedEmbeddingsInputs = new[]
 
 var i = 0;
 var sql = preservedEmbeddingsInputs
-                    //.Take(2)
-                    .Select
-                        (
-                            (x) =>
-                            {
-                                return
-                                    $"(${++i}, ${++i} , ${++i}, ${++i})";
-                            }
-                        )
-                    .Aggregate
-                        (
-                            (x, y) =>
-                            {
-                                return
-                                    $"{x}\r\n, {y}";
-                            }
-                        );
+            //.Take(2)
+            .Select
+                (
+                    (x) =>
+                    {
+                        return
+                            $"(${++i}, ${++i} , ${++i}, ${++i})";
+                    }
+                )
+            .Aggregate
+                (
+                    (x, y) =>
+                    {
+                        return
+                            $"{x}\r\n, {y}";
+                    }
+                );
 
 sql = $@"
 WITH
