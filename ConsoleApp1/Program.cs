@@ -1,12 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Npgsql;
 using OpenAI;
-using OpenAI.Models;
 using PgVectors.NET;
 using PgVectors.Npgsql;
 using System.Data;
 using System.Data.Common;
-using System.Formats.Asn1;
 using System.Security.Cryptography;
 using System.Text;
 
