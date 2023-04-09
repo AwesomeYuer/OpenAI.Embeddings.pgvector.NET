@@ -7,16 +7,71 @@
  # References and Thanks for `Open Source` and `Internet`
  - Why `OpenAI Embedding` return different vectors for the same text input?
 
-    https://community.openai.com/t/why-openai-embedding-return-different-vectors-for-the-same-text-input/144495
+    - https://community.openai.com/t/why-openai-embedding-return-different-vectors-for-the-same-text-input/144495
 
  - Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
 
-    https://github.com/gannonh/gpt3.5-turbo-pgvector
+    - https://github.com/gannonh/gpt3.5-turbo-pgvector
 
-    https://m.weibo.cn/status/4879926925199207?sourceType=weixin&from=10D3395010&wm=9006_2001&featurecode=newtitle&s_channel=4&s_trans=1922705517_4879926925199207&jumpfrom=weibocom
+    - https://weibo.com/1727858283/MzNJjh3yW
+```
+微博正文
 
- ```
- 微博正文
+问：宝玉老师，我是智能制造领域的开发者，我想把 AIGC 应用到生产故障定位的场景中，比如：当前手机主板生产检测中发现故障，还需要人工根据pcb、layout、个人经验等信息给出判断，能否先把 pcb、layout 喂给 AIGC，然后当故障出现时人工再填写一些故障现象（作为prompt），得到一些维修建议。
+
+答：
+我觉得这应该是一个偏文档检索的AI需求，也是蛮好的一个应用AI的场景。
+
+首先对于ChatGPT这类AI来说，它们只有很少甚至没有你所在领域的经验，这部分数据需要你提供给AI，才能让它帮到你。
+
+所以要做这件事，你得先保证自己有一定量的文档库或者知识库，最好是结构化的文本数据。文档数据越全这件事越容易做。
+
+然后要基于AI训练自己的数据通常有两种方式：fine tunes 和 embedding
+
+这两个都可以达到目的，但有一些差别：
+
+fine tunes通常是指的微调，也就是基于大模型之上加上自己的数据，但你无法改变大模型本身，只能是提供一些特定领域的数据参考，或者让它用特定的风格、格式回复问题。
+
+如果你要用fine tunes训练自己的数据，你需要将自己的数据整理成格式化的prompt（提示） 和completion（完成）
+
+例如：
+prompt：如果手机黑屏怎么处理
+completion：先检查电源，然后看显示屏，再……
+
+等你的数据训练好了，如果用户在使用你的模型数据时，正好问到了你训练过的相似的prompt，那么可以直接得到对应的completion，如果没有匹配到，那还是没法有结果。
+
+Embedding的话，你只是将自己的数据向量化，把文档的文本分块，每一块转换成1536维向量数字，数据还是存在你自己那里。当你需要检索或者提问时，先通过向量检索找到对应的文档，然后把找到的所有文档内容，连同你的问题一起交给AI，然后AI根据找到的资料，整理后返还给你。
+
+举例来说，用户问：“手机黑屏怎么处理”
+，然后你的系统将这段话转换成向量数组，系统去你的文档库里面找，结果找到匹配的文档1,2,3。系统将文档和用户的问题一起交给AI，跟AI说：有用户问了“手机黑屏怎么处理”这个问题，我给你找到了这几个技术文档，你帮我整理总结一下发给ta。
+
+最后AI把找到的文档整理后发给用户。
+
+再回到之前你问的问题，就你这种需求，我个人建议采用Embedding会比较好，几个原因：
+
+1. Embedding能满足你的需求，可以根据问题找到想要的答案，并且是自然语言的交互，甚至不要求文档的语言，任何语言的文档都可以支持
+2. Embedding对数据源的格式要求要低一些，一般的知识库文档网页就够了
+3. Embedding很便宜，整个文档库都做一次向量化花不了多少钱
+4. 很多现成的开源系统可以帮助你做这个事。
+
+也不是说不可以用fine tunes，比如：
+1. 你不差钱
+2. 你不想麻烦去做Embedding、保存检索向量数据、搭建系统，你只想有个模型直接用
+
+关于Embedding，给你推荐几篇我写过的微博：
+
+网页链接
+
+网页链接
+
+网页链接
+
+```
+    
+    - https://weibo.com/1727858283/MxxgolOyb
+
+```
+微博正文
 
 @宝玉xp (<= 感谢)
 3-16 14:38 来自 微博网页版 已编辑
@@ -90,7 +145,7 @@ cd my-app && npm install @supabase/supabase-js
 🔗 github.com/gannonh/gpt3.5-turbo-pgvector
 长图
 
- ```
+```
 
 - `pgVector`
     
