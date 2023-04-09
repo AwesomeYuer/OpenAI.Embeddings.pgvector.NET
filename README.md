@@ -68,7 +68,7 @@ Embedding的话，你只是将自己的数据向量化，把文档的文本分�
 
 ```
     
-    - https://weibo.com/1727858283/MxxgolOyb
+   - https://weibo.com/1727858283/MxxgolOyb
 
 ```
 微博正文
