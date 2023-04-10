@@ -242,6 +242,11 @@ CREATE INDEX IF NOT EXISTS ivfflat_embedding
     TABLESPACE pg_default;
 ```
 
+- How to store all history of every unique input content?
+    - Reference:    
+        https://github.com/AwesomeYuer/OpenAI.Embeddings.pgvector.NET/blob/a722eedda15e88f142f09e113b8f49f75879be23/ConsoleApp1/Program.cs#L59
+
+
 - Sample query `Preserved content's Vectors/Embeddings` matched and sorted by similarity with `(table v)`, that's the distance between `(table v)` and `Preserved content's Vectors/Embeddings`
 ```sql
 
