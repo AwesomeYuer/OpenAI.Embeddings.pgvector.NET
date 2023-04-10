@@ -160,6 +160,7 @@ docker run --name test-pgvector -e POSTGRES_PASSWORD=password01! -d -p 5432:5432
 ```
 # `PostgreSQL` Database preparation
 - Use `pgAdmin` connect to server
+    https://www.pgadmin.org/download/
 ```
 #Address:
 localhost
