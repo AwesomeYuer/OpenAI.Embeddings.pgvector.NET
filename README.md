@@ -242,7 +242,7 @@ CREATE INDEX IF NOT EXISTS ivfflat_embedding
     TABLESPACE pg_default;
 ```
 
-- Query matched preserved contents sort by similarity
+- Sample query `Preserved content's Vectors/Embeddings` matched and sorted by similarity with `(table v)`, that's the distance between `(table v)` and `Preserved content's Vectors/Embeddings`
 ```sql
 
 -- Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
