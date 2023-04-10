@@ -281,13 +281,14 @@ FROM
 ORDER BY
     a."Distance";
 
-
 ```
 
 # Run/Debug program/project entry:
 ```
+
 # Open Visual Studio solution at first, and then run or debug:
 OpenAI.Embeddings.pgvector.NET\ConsoleApp1\ConsoleApp1.csproj
+
 ```
 
 # Config your `Open AI` key in :
