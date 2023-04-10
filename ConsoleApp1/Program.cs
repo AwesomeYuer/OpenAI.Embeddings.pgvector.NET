@@ -58,7 +58,7 @@ var sql = preservedEmbeddingsInputs
 
 // Why OpenAI Embedding return different vectors for the same text input?
 // https://community.openai.com/t/why-openai-embedding-return-different-vectors-for-the-same-text-input/144495
-
+// Store all vectors for every inputs
 sql = $@"
 WITH
 T1
