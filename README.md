@@ -200,7 +200,7 @@ CREATE EXTENSION vector;
 ```sql
 -- Why OpenAI Embedding return different vectors for the same text input?
 -- https://community.openai.com/t/why-openai-embedding-return-different-vectors-for-the-same-text-input/144495
--- The table is designed for store all history vectors/embeddings of every unique inputs contents
+-- The table is designed for store all history vectors/embeddings of every unique input content
 
 -- Table: public.ContentsEmbeddings
 -- DROP TABLE IF EXISTS public."ContentsEmbeddings";
