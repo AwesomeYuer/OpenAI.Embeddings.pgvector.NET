@@ -1,4 +1,3 @@
-
 namespace PgVectors.NET;
 
 public class PgVector : IEquatable<PgVector>
@@ -48,13 +47,62 @@ public class PgVector : IEquatable<PgVector>
         return !(x == y);
     }
 
-    //public override int GetHashCode()
-    //{
-    //    return ToString().GetHashCode();
-    //}
+    public override int GetHashCode()
+    {
+        return ToString().GetHashCode();
+        //(
+        //    this
+        //    -
+        //    new PgVector
+        //            (
+        //                _pgVector
+        //                    .Select
+        //                        (
+        //                            (x) =>
+        //                            {
+        //                                return 0.0f;
+        //                            }
+        //                        )
+        //                    .ToArray()
+        //            )
+        //)
+        //.GetHashCode();
+    }
 
     public override bool Equals(object? @object)
     {
         return Equals(@object as PgVector);
+    }
+
+
+    public static double operator - (PgVector x, PgVector y)
+    {
+        return
+            x.GetEuclideanDistanceWith(y);
+    }
+
+
+    public double GetEuclideanDistanceWith(PgVector other)
+    {
+        var r = _pgVector
+                        .Zip
+                            (
+                                other
+                                    ._pgVector
+                                , (xi, xj) =>
+                                {
+                                    return
+                                        Math
+                                            .Pow(xi - xj , 2.0)
+                                        ;
+                                }
+                            )
+                        .Sum();
+        return
+            Math
+                .Sqrt
+                    (
+                        r
+                    );
     }
 }

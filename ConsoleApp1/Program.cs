@@ -360,3 +360,50 @@ await using (var sqlCommand = new NpgsqlCommand(sql, connection))
         }
     }
 }
+
+
+sql = @"
+    SELECT
+		  a.""ID""
+        , a.""Content""
+        , (a.""EarliestEmbedding"" <-> ""Embedding"")    as ""DistanceWithEarliestEmbedding""    
+		, a.""EmbeddingHash""
+		, a.""EarliestEmbeddingHash""
+        , a.""UpdateTime""
+        , a.""CreateTime""
+		, a.""Embedding""
+		, a.""EarliestEmbedding""
+    FROM
+        ""ContentsEmbeddings"" a
+	order by
+		  a.""Content""
+		, ""DistanceWithEarliestEmbedding"" 
+";
+
+Console.WriteLine("==================================================================");
+
+await using (var sqlCommand = new NpgsqlCommand(sql, connection))
+{
+    var seperator = "\t\t\t\t";
+    await using (DbDataReader dataReader = await sqlCommand.ExecuteReaderAsync())
+    {
+        while (await dataReader.ReadAsync())
+        {
+            IDataRecord dataRecord = dataReader;
+            var preservedContent = dataReader.GetString(dataRecord.GetOrdinal("Content"));
+            var pgVectorEarliestEmbedding = dataReader.GetFieldValue<PgVector>(dataRecord.GetOrdinal("EarliestEmbedding"));
+            var pgVectorEmbedding = dataReader.GetFieldValue<PgVector>(dataRecord.GetOrdinal("Embedding"));
+            var distanceWithEarliestEmbedding = dataReader.GetFieldValue<Double>(dataRecord.GetOrdinal("DistanceWithEarliestEmbedding"));
+            var distance = pgVectorEmbedding - pgVectorEarliestEmbedding;
+            if (distanceWithEarliestEmbedding != distance)
+            {
+                //throw new Exception("distanceWithEarliestEmbedding is not Euclidean Distance!");
+            }
+            Console
+                .WriteLine
+                        (
+                            $@"{nameof(preservedContent)}: {preservedContent}{seperator}{nameof(distanceWithEarliestEmbedding)}: {distanceWithEarliestEmbedding}{seperator}{nameof(distance)}: {distance}"
+                        );
+        }
+    }
+}
