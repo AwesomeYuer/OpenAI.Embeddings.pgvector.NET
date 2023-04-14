@@ -172,7 +172,7 @@ namespace OpenAI
                     {
                         var parts = line.Split('=', ':');
 
-                        for (var i = 0; i < parts.Length; i++)
+                        for (var i = 0; i < parts.Length - 1; i++)
                         {
                             var part = parts[i];
                             var nextPart = parts[i + 1];

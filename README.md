@@ -8,6 +8,7 @@
  - Why `OpenAI Embedding` return different vectors for the same text input?
 
     - https://community.openai.com/t/why-openai-embedding-return-different-vectors-for-the-same-text-input/144495
+    - I cannot confirm whether this answer on above is accurate, as the inconsistency in vector generation, calculation of distance results and sorting by distance may have a significant impact.
 
  - Retrieve the similarity scores of matching sorted `Ad-hoc` `vectors` with the preserved `embedding vectors` of contents.
 
