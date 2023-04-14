@@ -1,6 +1,6 @@
-using Xunit;
 using Npgsql;
-using PgVectors.Npgsql;
+using Pgvector.Npgsql;
+using Pgvector;
 
 namespace PgVectors.NET;
 
@@ -39,9 +39,9 @@ public class Example
 
         await using (var cmd = new NpgsqlCommand("INSERT INTO items (embedding) VALUES ($1), ($2), ($3)", conn))
         {
-            var embedding1 = new PgVector(new float[] { 1, 1, 1 });
-            var embedding2 = new PgVector(new float[] { 2, 2, 2 });
-            var embedding3 = new PgVector(new float[] { 1, 1, 2 });
+            var embedding1 = new Vector(new float[] { 1, 1, 1 });
+            var embedding2 = new Vector(new float[] { 2, 2, 2 });
+            var embedding3 = new Vector(new float[] { 1, 1, 2 });
             cmd.Parameters.AddWithValue(embedding1);
             cmd.Parameters.AddWithValue(embedding2);
             cmd.Parameters.AddWithValue(embedding3);
@@ -50,13 +50,13 @@ public class Example
 
         await using (var cmd = new NpgsqlCommand("SELECT * FROM items ORDER BY embedding <-> $1 LIMIT 5", conn))
         {
-            var embedding = new PgVector(new float[] { 1, 1, 1 });
+            var embedding = new Vector(new float[] { 1, 1, 1 });
             cmd.Parameters.AddWithValue(embedding);
 
             await using (var reader = await cmd.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
-                    Console.WriteLine((PgVector) reader.GetValue(0));
+                    Console.WriteLine((Vector) reader.GetValue(0));
             }
         }
 

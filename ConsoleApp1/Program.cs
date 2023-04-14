@@ -1,12 +1,14 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Npgsql;
 using OpenAI;
-using PgVectors.NET;
-using PgVectors.Npgsql;
+using Pgvector;
+using Pgvector.Npgsql;
 using System.Data;
 using System.Data.Common;
 using System.Security.Cryptography;
 using System.Text;
+using System.Linq;
+
 
 Console.WriteLine("Hello, World!");
 
@@ -188,7 +190,7 @@ var embeddings = result
                                 return
                                     (
                                         preservedEmbeddingsInputs[i ++]
-                                        , new PgVector
+                                        , new Vector
                                                     (
                                                         e
                                                             .Embedding
@@ -264,6 +266,19 @@ result = await openAIClient
                         .CreateEmbeddingAsync
                                 (adHocQueryInput, model);
 
+var adHocQueryEmbedding = result
+                                .Data[0]
+                                .Embedding
+                                .Select
+                                    (
+                                        (x) =>
+                                        {
+                                            return (float)x;
+                                        }
+                                    )
+                                .ToArray()
+                                ;
+var seperator = "\t\t";
 // Query match similarity
 // Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
 // The distance means similarity
@@ -280,8 +295,9 @@ as
           ""Content""
         , ""ContentHash""
         , ""EmbeddingHash""
-        , ""Embedding"" <-> $1::vector      as ""Distance""
-        --, $1                              as ""AdHocQueryEmbedding""
+        , ""Embedding"" <-> $1::vector                      as ""EuclideanDistance""
+        , cosine_distance(""Embedding"", $1::vector)        as ""CosineDistance""
+        --, $1                                              as ""AdHocQueryEmbedding""
         , ""UpdateTime""
         , ""CreateTime""
     FROM
@@ -292,14 +308,17 @@ T2
 as
 (
     SELECT
-          MAX(a.""Content"")                    as ""Content""
+          MAX(a.""Content"")                                as ""Content""
         , a.""ContentHash""
-        , COUNT(DISTINCT a.""EmbeddingHash"")   as ""CountOfEmbeddings""
-        , AVG(a.""Distance"")                   as ""AverageOfDistance""
-        , MAX(a.""Distance"")                   as ""MaxOfDistance""
-        , MIN(a.""Distance"")                   as ""MinOfDistance""
-        , MIN(a.""CreateTime"")                 as ""EarliestEmbeddingTime""
-        , MAX(a.""CreateTime"")                 as ""LatestEmbeddingTime""
+        , COUNT(DISTINCT a.""EmbeddingHash"")               as ""CountOfEmbeddings""
+        , AVG(a.""EuclideanDistance"")                      as ""AverageOfEuclideanDistance""
+        , MAX(a.""EuclideanDistance"")                      as ""MaxOfEuclideanDistance""
+        , MIN(a.""EuclideanDistance"")                      as ""MinOfEuclideanDistance""
+        , AVG(a.""CosineDistance"")                         as ""AverageOfCosineDistance""
+        , MAX(a.""CosineDistance"")                         as ""MaxOfCosineDistance""
+        , MIN(a.""CosineDistance"")                         as ""MinOfCosineDistance""
+        , MIN(a.""CreateTime"")                             as ""EarliestEmbeddingTime""
+        , MAX(a.""CreateTime"")                             as ""LatestEmbeddingTime""
     FROM
         T1 a
     GROUP BY
@@ -307,52 +326,48 @@ as
 )
 SELECT
       a.*
-    , (a.""MaxOfDistance"" - a.""MinOfDistance"") as ""DiffOfMaxMinDistance""
+    , (a.""MaxOfEuclideanDistance"" - a.""MinOfEuclideanDistance"")     as ""DiffOfMaxMinEuclideanDistance""
+    , (a.""MaxOfCosineDistance"" - a.""MinOfEuclideanDistance"")        as ""DiffOfMaxMinCosineDistance""
 FROM
     T2 a
 ORDER BY
-    a.""AverageOfDistance"";
+    {0}
+    {1};
 --1
 "
 ;
 
-var adHocQueryEmbedding = result
-                                .Data[0]
-                                .Embedding
-                                .Select
-                                    (
-                                        (x) =>
-                                        {
-                                            return (float) x;
-                                        }
-                                    )
-                                .ToArray()
-                                ;
-
-await using (var sqlCommand = new NpgsqlCommand(sql, connection))
+await using
+    (
+        var sqlCommand = new NpgsqlCommand
+                                (
+                                    string.Format(sql, @"a.""AverageOfEuclideanDistance""", string.Empty)
+                                    , connection
+                                )
+    )
 {
-    var adHocQueryPgVector = new PgVector(adHocQueryEmbedding);
+    var adHocQueryPgVector = new Vector(adHocQueryEmbedding);
     var adHocQueryHashCode = adHocQueryPgVector.GetHashCode();
     sqlCommand.Parameters.AddWithValue(adHocQueryEmbedding);
-    var seperator = "\t\t";
+    
 
     await using (DbDataReader dataReader = await sqlCommand.ExecuteReaderAsync())
     {
         while (await dataReader.ReadAsync())
         {
-            IDataRecord dataRecord      = dataReader;
-            var averageOfDistance       = dataReader.GetDouble(dataRecord.GetOrdinal("AverageOfDistance"));
-            var countOfEmbeddings       = dataReader.GetInt32(dataRecord.GetOrdinal("CountOfEmbeddings"));
-            var maxOfDistance           = dataReader.GetDouble(dataRecord.GetOrdinal("MaxOfDistance"));
-            var minOfDistance           = dataReader.GetDouble(dataRecord.GetOrdinal("MinOfDistance"));
-            var diffOfMaxMinDistance    = dataReader.GetDouble(dataRecord.GetOrdinal("DiffOfMaxMinDistance"));
-            var earliestEmbeddingTime   = dataReader.GetDateTime(dataRecord.GetOrdinal("EarliestEmbeddingTime"));
-            var latestEmbeddingTime     = dataReader.GetDateTime(dataRecord.GetOrdinal("LatestEmbeddingTime"));
-            var preservedContent        = dataReader.GetString(dataRecord.GetOrdinal("Content"));
+            IDataRecord dataRecord              = dataReader;
+            var averageOfEuclideanDistance      = dataReader.GetDouble(dataRecord.GetOrdinal("AverageOfEuclideanDistance"));
+            var countOfEmbeddings               = dataReader.GetInt32(dataRecord.GetOrdinal("CountOfEmbeddings"));
+            var maxOfEuclideanDistance          = dataReader.GetDouble(dataRecord.GetOrdinal("MaxOfEuclideanDistance"));
+            var minOfEuclideanDistance          = dataReader.GetDouble(dataRecord.GetOrdinal("MinOfEuclideanDistance"));
+            var diffOfMaxMinEuclideanDistance   = dataReader.GetDouble(dataRecord.GetOrdinal("DiffOfMaxMinEuclideanDistance"));
+            var earliestEmbeddingTime           = dataReader.GetDateTime(dataRecord.GetOrdinal("EarliestEmbeddingTime"));
+            var latestEmbeddingTime             = dataReader.GetDateTime(dataRecord.GetOrdinal("LatestEmbeddingTime"));
+            var preservedContent                = dataReader.GetString(dataRecord.GetOrdinal("Content"));
             Console
                 .WriteLine
                         (
-                            $@"{nameof(adHocQueryInput)}: ""{adHocQueryInput}"", {nameof(averageOfDistance)}: [{averageOfDistance}]{seperator},{nameof(diffOfMaxMinDistance)}: [{diffOfMaxMinDistance}]{seperator},{nameof(countOfEmbeddings)}: [{countOfEmbeddings}]{seperator},{nameof(preservedContent)}: ""{preservedContent}"""
+                            $@"{nameof(adHocQueryInput)}: ""{adHocQueryInput}"", {nameof(averageOfEuclideanDistance)}: [{averageOfEuclideanDistance}]{seperator},{nameof(diffOfMaxMinEuclideanDistance)}: [{diffOfMaxMinEuclideanDistance}]{seperator},{nameof(countOfEmbeddings)}: [{countOfEmbeddings}]{seperator},{nameof(preservedContent)}: ""{preservedContent}"""
                         );
             
             //Console
@@ -361,12 +376,53 @@ await using (var sqlCommand = new NpgsqlCommand(sql, connection))
     }
 }
 
+Console.WriteLine("==================================================================");
+
+await using
+    (
+        var sqlCommand = new NpgsqlCommand
+                                (
+                                    string.Format(sql, @"a.""AverageOfCosineDistance""", "")
+                                    , connection
+                                )
+    )
+{
+    var adHocQueryPgVector = new Vector(adHocQueryEmbedding);
+    var adHocQueryHashCode = adHocQueryPgVector.GetHashCode();
+    sqlCommand.Parameters.AddWithValue(adHocQueryEmbedding);
+
+
+    await using (DbDataReader dataReader = await sqlCommand.ExecuteReaderAsync())
+    {
+        while (await dataReader.ReadAsync())
+        {
+            IDataRecord dataRecord          = dataReader;
+            var averageOfCosineDistance     = dataReader.GetDouble(dataRecord.GetOrdinal("AverageOfCosineDistance"));
+            var countOfEmbeddings           = dataReader.GetInt32(dataRecord.GetOrdinal("CountOfEmbeddings"));
+            var maxOfCosineDistance         = dataReader.GetDouble(dataRecord.GetOrdinal("MaxOfCosineDistance"));
+            var minOfCosineDistance         = dataReader.GetDouble(dataRecord.GetOrdinal("MinOfCosineDistance"));
+            var diffOfMaxMinCosineDistance  = dataReader.GetDouble(dataRecord.GetOrdinal("DiffOfMaxMinCosineDistance"));
+            var earliestEmbeddingTime       = dataReader.GetDateTime(dataRecord.GetOrdinal("EarliestEmbeddingTime"));
+            var latestEmbeddingTime         = dataReader.GetDateTime(dataRecord.GetOrdinal("LatestEmbeddingTime"));
+            var preservedContent            = dataReader.GetString(dataRecord.GetOrdinal("Content"));
+            Console
+                .WriteLine
+                        (
+                            $@"{nameof(adHocQueryInput)}: ""{adHocQueryInput}"", {nameof(averageOfCosineDistance)}: [{averageOfCosineDistance}]{seperator},{nameof(diffOfMaxMinCosineDistance)}: [{diffOfMaxMinCosineDistance}]{seperator},{nameof(countOfEmbeddings)}: [{countOfEmbeddings}]{seperator},{nameof(preservedContent)}: ""{preservedContent}"""
+                        );
+
+            //Console
+            //    .WriteLine(dataReader.GetFieldValue<PgVector>(3).GetHashCode() == dataReader.GetFieldValue<PgVector>(3).GetHashCode());
+        }
+    }
+}
 
 sql = @"
     SELECT
 		  a.""ID""
         , a.""Content""
-        , (a.""EarliestEmbedding"" <-> ""Embedding"")    as ""DistanceWithEarliestEmbedding""    
+        , (a.""EarliestEmbedding"" <-> a.""Embedding"")                 as ""EuclideanDistanceWithEarliestEmbedding""
+        , cosine_distance(a.""EarliestEmbedding"", a.""Embedding"")		as ""CosineDistanceWithEarliestEmbedding"" 
 		, a.""EmbeddingHash""
 		, a.""EarliestEmbeddingHash""
         , a.""UpdateTime""
@@ -377,33 +433,97 @@ sql = @"
         ""ContentsEmbeddings"" a
 	order by
 		  a.""Content""
-		, ""DistanceWithEarliestEmbedding"" 
+		, ""EuclideanDistanceWithEarliestEmbedding""
 ";
 
 Console.WriteLine("==================================================================");
 
-await using (var sqlCommand = new NpgsqlCommand(sql, connection))
-{
-    var seperator = "\t\t\t\t";
-    await using (DbDataReader dataReader = await sqlCommand.ExecuteReaderAsync())
-    {
-        while (await dataReader.ReadAsync())
-        {
-            IDataRecord dataRecord = dataReader;
-            var preservedContent = dataReader.GetString(dataRecord.GetOrdinal("Content"));
-            var pgVectorEarliestEmbedding = dataReader.GetFieldValue<PgVector>(dataRecord.GetOrdinal("EarliestEmbedding"));
-            var pgVectorEmbedding = dataReader.GetFieldValue<PgVector>(dataRecord.GetOrdinal("Embedding"));
-            var distanceWithEarliestEmbedding = dataReader.GetFieldValue<Double>(dataRecord.GetOrdinal("DistanceWithEarliestEmbedding"));
-            var distance = pgVectorEmbedding - pgVectorEarliestEmbedding;
-            if (distanceWithEarliestEmbedding != distance)
-            {
-                //throw new Exception("distanceWithEarliestEmbedding is not Euclidean Distance!");
-            }
-            Console
-                .WriteLine
+var results = GetDataAsIEnumerable()
+                    .OrderBy
                         (
-                            $@"{nameof(preservedContent)}: {preservedContent}{seperator}{nameof(distanceWithEarliestEmbedding)}: {distanceWithEarliestEmbedding}{seperator}{nameof(distance)}: {distance}"
+                            (x) =>
+                            {
+                                return
+                                    x.EuclideanDistanceWithEarliestEmbedding;
+                            }
                         );
+
+seperator = "\t\t\t\t";
+await foreach (var (preservedContent, pgVectorEarliestEmbedding, pgVectorEmbedding, euclideanDistanceWithEarliestEmbedding, CosineDistanceWithEarliestEmbedding) in results)
+{
+    var euclideanDistance = pgVectorEmbedding - pgVectorEarliestEmbedding;
+    if (euclideanDistanceWithEarliestEmbedding != euclideanDistance)
+    {
+        //throw new Exception("distanceWithEarliestEmbedding is not Euclidean Distance!");
+    }
+    Console
+        .WriteLine
+                (
+                    $@"{nameof(preservedContent)}: {preservedContent}{seperator}{nameof(euclideanDistanceWithEarliestEmbedding)}: {euclideanDistanceWithEarliestEmbedding}{seperator}{nameof(euclideanDistance)}: {euclideanDistance}"
+                );
+}
+
+results = GetDataAsIEnumerable()
+                    .OrderByDescending
+                        (
+                            (x) =>
+                            {
+                                return
+                                    x.CosineDistanceWithEarliestEmbedding;
+                            }
+                        );
+
+seperator = "\t\t\t\t";
+await foreach (var (preservedContent, pgVectorEarliestEmbedding, pgVectorEmbedding, euclideanDistanceWithEarliestEmbedding, CosineDistanceWithEarliestEmbedding) in results)
+{
+    var euclideanDistance = pgVectorEmbedding - pgVectorEarliestEmbedding;
+    if (euclideanDistanceWithEarliestEmbedding != euclideanDistance)
+    {
+        //throw new Exception("distanceWithEarliestEmbedding is not Euclidean Distance!");
+    }
+    Console
+        .WriteLine
+                (
+                    $@"{nameof(preservedContent)}: {preservedContent}{seperator}{nameof(euclideanDistanceWithEarliestEmbedding)}: {euclideanDistanceWithEarliestEmbedding}{seperator}{nameof(euclideanDistance)}: {euclideanDistance}"
+                );
+}
+
+
+async IAsyncEnumerable
+            <
+                (
+                      string PreservedContent
+                    , Vector PgVectorEarliestEmbedding
+                    , Vector PgVectorEmbedding
+                    , double EuclideanDistanceWithEarliestEmbedding
+                    , double CosineDistanceWithEarliestEmbedding
+                )
+            > GetDataAsIEnumerable()
+{
+
+    await using (var sqlCommand = new NpgsqlCommand(sql, connection))
+    {
+        await using (DbDataReader dataReader = await sqlCommand.ExecuteReaderAsync())
+        {
+            while (await dataReader.ReadAsync())
+            {
+                IDataRecord dataRecord = dataReader;
+                var preservedContent                            = dataReader.GetString(dataRecord.GetOrdinal("Content"));
+                var pgVectorEarliestEmbedding                   = dataReader.GetFieldValue<Vector>(dataRecord.GetOrdinal("EarliestEmbedding"));
+                var pgVectorEmbedding                           = dataReader.GetFieldValue<Vector>(dataRecord.GetOrdinal("Embedding"));
+                var euclideanDistanceWithEarliestEmbedding      = dataReader.GetFieldValue<Double>(dataRecord.GetOrdinal("euclideanDistanceWithEarliestEmbedding"));
+                var cosineDistanceWithEarliestEmbedding         = dataReader.GetFieldValue<Double>(dataRecord.GetOrdinal("cosineDistanceWithEarliestEmbedding"));
+                yield return
+                    (
+                          preservedContent
+                        , pgVectorEarliestEmbedding
+                        , pgVectorEmbedding
+                        , euclideanDistanceWithEarliestEmbedding
+                        , cosineDistanceWithEarliestEmbedding
+                    )
+                    ;
+
+            }
         }
     }
 }

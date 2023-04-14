@@ -2,8 +2,8 @@ using Npgsql.Internal;
 using Npgsql.Internal.TypeHandling;
 using Npgsql.PostgresTypes;
 using NpgsqlTypes;
-using PgVectors.NET;
-namespace PgVectors.Npgsql;
+
+namespace Pgvector.Npgsql;
 
 public class VectorTypeHandlerResolver : TypeHandlerResolver
 {
@@ -16,7 +16,9 @@ public class VectorTypeHandlerResolver : TypeHandlerResolver
 
         var pgVectorType = PgType("vector");
         if (pgVectorType is not null)
+        {
             _vectorHandler = new VectorHandler(pgVectorType);
+        }
     }
 
     public override NpgsqlTypeHandler? ResolveByDataTypeName(string typeName)
@@ -36,8 +38,10 @@ public class VectorTypeHandlerResolver : TypeHandlerResolver
 
     internal static string? ClrTypeToDataTypeName(Type type)
     {
-        if (type == typeof(PgVector))
+        if (type == typeof(Vector))
+        {
             return "vector";
+        }
 
         return null;
     }

@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OpenAI-DotNet\OpenAI-dotNET.csproj" />
     <ProjectReference Include="..\pgvector-dotNET\pgvector-dotNET.csproj" />
   </ItemGroup>
