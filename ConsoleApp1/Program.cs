@@ -34,6 +34,8 @@ var preservedEmbeddingsInputs = new[]
     , "Java"
     , "我爱祖国"
     , "狼吃肉狗吃屎"
+    , "性别男"
+    , "爱好女"
 }
 ;
 
@@ -254,6 +256,8 @@ adHocQueryInput         = "php";
 adHocQueryInput         = "Java";
 adHocQueryInput         = "螃蟹好吃";
 adHocQueryInput         = "JavaScript";
+adHocQueryInput         = "男";
+adHocQueryInput         = "爱好男";
 
 
 Console.WriteLine($@"{nameof(adHocQueryInput)}: ""{adHocQueryInput}"" match similarity:");
@@ -295,7 +299,7 @@ as
         , ""ContentHash""
         , ""EmbeddingHash""
         , ""Embedding"" <-> $1::vector                      as ""EuclideanDistance""
-        , cosine_distance(""Embedding"", $1::vector)        as ""CosineDistance""
+        , ""Embedding"" <=> $1::vector                      as ""CosineDistance""
         --, $1                                              as ""AdHocQueryEmbedding""
         , ""UpdateTime""
         , ""CreateTime""

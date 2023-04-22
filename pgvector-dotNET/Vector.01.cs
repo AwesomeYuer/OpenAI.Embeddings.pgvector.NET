@@ -99,7 +99,8 @@ public partial class Vector : IEquatable<Vector>
                             .Sum()
                     );
     }
-    public double GetDotProductWith(Vector other)
+
+    public float GetDotProductWith(Vector other)
     {
         return
             vec
@@ -116,13 +117,56 @@ public partial class Vector : IEquatable<Vector>
                 .Sum();
     }
 
+    public double GetCosineSimilarityWith(Vector other)
+    {
+        var query = vec
+                        .Zip
+                            (
+                                other
+                                    .vec
+                                , (xThis, xOther) =>
+                                {
+                                    var product = xThis * xOther;
+                                    var powThis = Math.Pow(xThis, 2.0);
+                                    var powOther = Math.Pow(xOther, 2.0);
+                                    return
+                                        (
+                                              product
+                                            , powThis
+                                            , powOther
+                                        );
+                                }
+                            );
+        double dotProduct = 0.0f;
+        double sumOfPowThis = 0.0f;
+        double sumOfPowOther = 0.0f;
+        foreach (var x in query) 
+        {
+            dotProduct += x.product;
+            sumOfPowThis += x.powThis;
+            sumOfPowOther += x.powOther;
+        }
+        var magnitudeThis = Math.Sqrt(sumOfPowThis);
+        var magnitudeOther = Math.Sqrt(sumOfPowOther);
+        var result = 0.0d;
+        if
+            (
+                magnitudeThis != 0.0
+                &&
+                magnitudeOther != 0.0
+            )
+        {
+            result =
+                    dotProduct
+                    /
+                    (Math.Sqrt(sumOfPowThis) * Math.Sqrt(sumOfPowOther));
+        }
+        return result;
+    }
+
     public double GetCosineDistanceWith(Vector other)
     {
-        double dotProduct = GetDotProductWith(other);
-        double magnitudeThis = GetMagnitude();
-        double magnitudeOther = other.GetMagnitude();
-        return
-            dotProduct/(magnitudeThis * magnitudeOther);
+        return 1 - GetCosineSimilarityWith(other);
     }
 
     public bool Equals(Vector? other)

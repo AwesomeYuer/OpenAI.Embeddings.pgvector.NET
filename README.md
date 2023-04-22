@@ -253,7 +253,7 @@ CREATE INDEX IF NOT EXISTS ivfflat_embedding
 ```sql
 
 -- Query order by ascending the distance between the vector of ad-hoc query key words's embedding and the vectors of preserved contents of embeddings in database
--- The distance means similarity
+-- The `distance [0, 2]` means `1 - similarity [-1, 1]`
 WITH
 v
 AS
@@ -270,10 +270,14 @@ as
 (
     SELECT
           "Content"
-        , "EarliestEmbedding"   <-> (table v)       as "EarliestDistance"
-        , "Embedding"           <-> (table v)       as "Distance"
-        , "EarliestEmbeddingHash"
-        , (table v)                                 as "AdHocQueryInputEmbedding"
+        , "EarliestEmbedding"   <-> (table v)       	as "EarliestL2Distance"
+		, "Embedding"   <-> (table v)       			as "L2Distance"
+        , "EarliestEmbedding"   <=> (table v)       	as "EarliestCosineDistance"
+	    , "Embedding"   <=> (table v)       			as "CosineDistance"
+	    , 1 - ("EarliestEmbedding"   <=> (table v)) 	as "EarliestCosineSimilarity"
+	    , 1 - ("Embedding"   <=> (table v))       		as "CosineSimilarity"
+        , "EarliestEmbeddingHash"	
+        , (table v)                                 	as "AdHocQueryInputEmbedding"
         , "EmbeddingHash"
         , "UpdateTime"
         , "CreateTime"
@@ -282,11 +286,13 @@ as
 )
 SELECT
       a.*
-    , (a."Distance" - a."EarliestDistance")         as "DiffDistance"
+    , (a."L2Distance" - a."EarliestL2Distance")         as "DiffDistance"
 FROM
     T1 a
 ORDER BY
-    a."Distance";
+    --a."L2Distance"
+	"CosineDistance"
+	;
 
 ```
 
